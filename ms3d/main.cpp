@@ -37,14 +37,17 @@ int main(){
 
 	auto printer2 = utl::Closure<int()>([]() {printf("2nd printer\n"); return 0;});
 
-	printer = printer2;
+	//printer = std::move(printer2);
 
 	printer();
 	printer2();
 
 
 	//thasjdkl
+	utl::Closure<int()> printer3;
+	printer3 = []() {return 5;};
 
+	printf("\n\nHere's a %d\n\n", printer3());
 	
 
 
