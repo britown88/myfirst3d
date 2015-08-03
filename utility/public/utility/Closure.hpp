@@ -4,158 +4,121 @@
 
 namespace utl {
 
-	template<typename T> class _ClosureInner {};
+	template<typename T> class Closure {};
 
-	//the inner storage for our closure
 	template<typename R, typename... Args>
-	class _ClosureInner<R(Args...)> {
-		MemoryBuffer *m_buffer;
-		R(*_execute)(MemoryBuffer &, Args...);
-	public:
-		//the actual execution
-		R operator()(Args... args) {
-			return _execute(*m_buffer, args...);
-		}
+	class Closure<R(Args...)> {
+		MemoryBuffer m_buffer;
+		R(*m_execute)(MemoryBuffer &, Args...);
+		void(*m_delete)(MemoryBuffer &);
+		MemoryBuffer(*m_copy)(MemoryBuffer &);
 
-	protected:
-		_ClosureInner(MemoryBuffer *buffer) :m_buffer(buffer) {}
-		~_ClosureInner() {}
-
-		template<typename T>
-		void generate(T const &c) {
-			_execute = [](MemoryBuffer &buff, Args... args) {
-				return ((T*)buff.data())->operator()(args...);
+		template<typename L>
+		void _generateExecutor(L const &) {
+			m_execute = [](MemoryBuffer &buff, Args... args) {
+				return ((L*)buff.data())->operator()(args...);
 			};
 		}
 
-		void reset(_ClosureInner<R(Args...)> const &other) {
-			_execute = other._execute;
-		}
-
-		void setBuffer(MemoryBuffer *buffer) {
-			m_buffer = buffer;
-		}
-	};
-
-	template<typename F> class Closure {};
-
-	template<typename R, typename... Args>
-	class Closure<R(Args...)> : public _ClosureInner<R(Args...)> {
-		MemoryBuffer m_buffer;
-		void(*_delete)(MemoryBuffer &);
-		MemoryBuffer(*_copy)(MemoryBuffer &);
-
-		template<typename T>
-		void _copyFromLambda(T const &lambda){
-			//we need to store our copy and destroy functions for this lambda
-			//as lambdas so we can copy them elsehwere
-			if (m_buffer) {
-				_delete(m_buffer);
+		template<typename L>
+		void _copyFromLambda(L const &lambda) {
+			if (m_delete && m_buffer) {
+				m_delete(m_buffer);
 			}
 
-			m_buffer.setSize(sizeof(T));
-			new(m_buffer.data()) T(lambda);
+			m_buffer.setSize(sizeof(L));
+			new(m_buffer.data()) L(lambda);
 
-			generate(lambda);
+			_generateExecutor(lambda);
 
-			_delete = [](MemoryBuffer &buffer) {
+			m_delete = [](MemoryBuffer &buffer) {
 				if (buffer) {
+					((L*)buffer.data())->~L();
 					buffer.setSize(0);
 				}
-				
+
 			};
 
-			_copy = [](MemoryBuffer &buffer) {
+			m_copy = [](MemoryBuffer &buffer) {
 				MemoryBuffer out;
 				if (buffer) {
 					out.setSize(buffer.getSize());
-					new(out.data()) T(*(T*)buffer.data());
+					new(out.data()) L(*(L*)buffer.data());
 				}
 				return std::move(out);
 			};
 		}
+
+
 	public:
-		Closure() : _ClosureInner<R(Args...)>(m_buffer), _copy(nullptr), _delete(nullptr) {}
+		typedef Closure<R(Args...)> Type;
+
+		//default
+		Closure() : m_execute(nullptr), m_copy(nullptr), m_delete(nullptr) {}
 
 		//copy
-		Closure(Closure<R(Args...)> const &other) : _ClosureInner<R(Args...)>(&m_buffer),
-			_copy(other._copy), _delete(other._delete) {
-
+		Closure(Type const &other) : m_execute(other.m_execute), m_copy(other.m_copy), m_delete(other.m_delete) {
 			if (_copy) {
-				//copy it over
-				m_buffer = std::move(_copy(other.m_buffer));
+				m_buffer = std::move(m_copy(other.m_buffer));
 			}
-
-			setBuffer(&m_buffer);
-			reset(other);
 		}
 
-		//init from a lambda
-		template<typename T>
-		Closure(T const &lambda) : _ClosureInner<R(Args...)>(&m_buffer) {
-			_copyFromLambda(lambda);
+		Type &operator=(Type const &other) {
+			if (m_delete && m_buffer) {
+				m_delete(m_buffer);
+			}
+
+			if (other.m_copy) {
+				m_buffer = std::move(other.m_copy(other.m_buffer));
+			}
+
+			m_execute = other.m_execute;
+			m_delete = other.m_delete;
+			m_copy = other.m_copy;
+			return *this;
 		}
 
 		//move
-		Closure(Closure<R(Args...)> && other): m_buffer(std::move(other.m_buffer)),
-			_ClosureInner<R(Args...)>(nullptr), _copy(other._copy), _delete(other._delete) {
-			setBuffer(&m_buffer);
-			reset(other);
-		}
+		Closure(Type && other):m_buffer(std::move(other.m_buffer)), m_execute(other.m_execute), m_copy(other.m_copy), m_delete(other.m_delete) {}
 
-		~Closure() {
-			if (_delete) {
-				_delete(m_buffer);
+		Type &operator=(Type && other) {
+			if (m_delete && m_buffer) {
+				m_delete(m_buffer);
 			}
-		}
 
-		//copy
-		Closure<R(Args...)> &operator=(Closure<R(Args...)> const &other) {
-			if (other._copy) {
-				//copy it over
-				m_buffer = std::move(other._copy(other.m_buffer));
-			}
-			else {
-				//assigning to a nulled out closure...ok
-				m_buffer.setSize(0);
-			}
-			reset(other);
-			_delete = other._delete;
-			_copy = other._copy;
+			m_buffer = std::move(other.m_buffer);			
+
+			m_execute = other.m_execute;
+			m_delete = other.m_delete;
+			m_copy = other.m_copy;
 			return *this;
 		}
 
-		//move 
-		Closure<R(Args...)> &operator=(Closure<R(Args...)> && other) {
-			if (other._copy) {
-				//copy it over
-				m_buffer = std::move(other._copy(other.m_buffer));
-			}
-			else {
-				//assigning to a nulled out closure...ok
-				m_buffer.setSize(0);
-			}
-			setBuffer(&m_buffer);
-			reset(other);
-			_delete = other._delete;
-			_copy = other._copy;
-
-			return *this;
+		//init from lambda
+		template<typename L>
+		Closure(L const &lambda) {
+			_copyFromLambda(lambda);
 		}
 
-		//assign from lambda
-		template<typename T>
-		Closure<R(Args...)> &operator=(T const &lambda) {
+		template<typename L>
+		Type &operator=(L const &lambda) {
 			_copyFromLambda(lambda);
 			return *this;
 		}
 
+		//destruct
+		~Closure() {
+			if (m_delete && m_buffer) {
+				m_delete(m_buffer);
+			}
+		}
+		
 		operator bool() {
 			return m_buffer;
 		}
+
+		R operator()(Args... args) {
+			return m_execute(m_buffer, args...);
+		}
 	};
-
-
-
-
 }

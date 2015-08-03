@@ -23,8 +23,29 @@ int main(){
 
 	utl::HelloWorld foo("sup");
 
-	foo.createNumberPrinter(17)();
+	auto printer = foo.createNumberPrinter(17);
+
+	printer();
+
+	printer = std::move(foo.createNumberPrinter(24));
+
+	printer();
+
+	printer = std::move(utl::Closure<int()>([]() {printf("testestest\n"); return 0;}));
+
+	printer();
+
+	auto printer2 = utl::Closure<int()>([]() {printf("2nd printer\n"); return 0;});
+
+	printer = printer2;
+
+	printer();
+	printer2();
+
+
 	//thasjdkl
+
+	
 
 
 
