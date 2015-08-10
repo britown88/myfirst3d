@@ -48,9 +48,43 @@ namespace utl {
          clear();
       }
 
-      //copy construct, assignment
-      //move constructor, move-assignment
-      //push back copy
+      Vector(Vector<T> const &other) {
+         for (auto &&o : other) {
+            push_back(o);
+         }
+      }
+
+      Vector<T> &operator=(Vector<T> const &other) {
+         if (this == &other) {
+            return *this;
+         }
+
+         clear();
+         for (auto &&o : other) {
+            push_back(o);
+         }
+         return *this;
+      }
+
+      Vector(Vector<T> const &&other) {
+         for (auto &&o : other) {
+            push_back(std::move(o));
+         }
+         other.clear();
+      }
+
+      Vector<T> &operator=(Vector<T> const &&other) {
+         if (this == &other) {
+            return *this;
+         }
+
+         clear();
+         for (auto &&o : other) {
+            push_back(std::move(o));
+         }
+         other.clear();
+         return *this;
+      }
 
       T *begin() {
          return (T*)m_buffer.data();
@@ -66,6 +100,16 @@ namespace utl {
          return std::move(m_buffer);
       }
 
+      void push_back(T const &obj) {
+         if (m_size == m_capacity) {
+            grow();
+         }
+
+         //construct obj at the correct place in our buffer
+         new(begin() + (m_size++)) T(obj);
+         m_buffer.setSize(m_size * sizeof(T));
+      }
+
       void push_back(T && obj) {
          if (m_size == m_capacity) {
             grow();
@@ -77,12 +121,17 @@ namespace utl {
       }
 
       void clear() {
-         if (m_size) {
-            while (m_size != 0) {
-               begin()[--m_size].~T();
-            }
-            m_buffer.setSize(0);
+
+         while (m_size > 0) {
+            begin()[--m_size].~T();
+         }            
+
+
+         if (m_buffer) {
+            m_buffer.clear();
          }
+         
+         m_capacity = 0;
       }
 
       size_t size() {

@@ -67,6 +67,10 @@ namespace utl {
          m_destroy(other.m_destroy) {}
 
       Type &operator=(Type && other) {
+         if (this == &other) {
+            return *this;
+         }
+
          _destroy();
          m_buffer = std::move(other.m_buffer);
          m_destroy = other.m_destroy;
