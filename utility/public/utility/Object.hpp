@@ -18,15 +18,15 @@ namespace utl {
 
    class Object;
 
-   class ObjectPrivate {      
+   class ObjectPrivate {
    public:
       Object *parentPtr;
 
-      void setParent(Object *p){
+      void setParent(Object *p) {
          parentPtr = p;
       }
 
-      virtual ~ObjectPrivate(){}
+      virtual ~ObjectPrivate() {}
    };
 
    class UTILITY_API Object {

@@ -2,17 +2,17 @@
 
 #include <string>
 
-namespace utl{
-   class HelloWorldPrivate : public ObjectPrivate{
+namespace utl {
+   class HelloWorldPrivate : public ObjectPrivate {
    public:
       std::string data;
 
       DECLARE_UTILITY_PRIVATE(HelloWorld)
 
-      
+
    };
 
-   MemoryBuffer HelloWorld::getShitImpl(){
+   MemoryBuffer HelloWorld::getShitImpl() {
       Vector<int> foo;
       foo.push_back(1);
       foo.push_back(2);
@@ -26,26 +26,26 @@ namespace utl{
       foo.push_back(10);
       foo.push_back(11);
       foo.push_back(12);
-      
+
       return foo.getBuffer();
    }
 
 
    Closure<int()> HelloWorld::createNumberPrinter(int numberToPrint) {
-	   Closure<int()> out([=]() {
-		   printf("Hey here's your number: %d", numberToPrint);
-		   return 0;
-	   });
+      Closure<int()> out([=]() {
+         printf("Hey here's your number: %d", numberToPrint);
+         return 0;
+      });
 
 
-	   return std::move(out);
+      return std::move(out);
    }
 
-   HelloWorld::HelloWorld(const char *toPrint):Object(new HelloWorldPrivate()){
+   HelloWorld::HelloWorld(const char *toPrint) :Object(new HelloWorldPrivate()) {
       self()->data = toPrint;
    }
 
-   void HelloWorld::print(){
+   void HelloWorld::print() {
       printf(self()->data.c_str());
    }
 

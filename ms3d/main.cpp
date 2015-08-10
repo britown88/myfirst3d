@@ -5,7 +5,7 @@
 #include "utility/HelloWorld.hpp"
 #include "utility/Closure.hpp"
 
-int main(){
+int main() {
    //utl::HelloWorld foo("foo\n");
    //utl::HelloWorld bar("bar\n");
 
@@ -13,42 +13,44 @@ int main(){
    //std::swap(foo, bar);
    //foo.print();
 
-	auto functor = [](int x) {printf("%d", x);};
+   auto functor = [](int x) {printf("%d", x);};
 
-	//
+   utl::MemoryBuffer asd, fgh;
+   asd = std::move(fgh);
 
-	//for (auto && shit : foo.getShit()){
-	//   printf("%d", shit);
-	//}
+   //
 
-	utl::HelloWorld foo("sup");
+   //for (auto && shit : foo.getShit()){
+   //   printf("%d", shit);
+   //}
 
-	auto printer = foo.createNumberPrinter(17);
+   utl::HelloWorld foo("sup");
 
-	printer();
+   auto printer = foo.createNumberPrinter(17);
 
-	printer = std::move(foo.createNumberPrinter(24));
+   printer();
 
-	printer();
+   printer = std::move(foo.createNumberPrinter(24));
 
-	printer = std::move(utl::Closure<int()>([]() {printf("testestest\n"); return 0;}));
+   printer();
 
-	printer();
+   printer = std::move(utl::Closure<int()>([]() {printf("testestest\n"); return 0;}));
 
-	auto printer2 = utl::Closure<int()>([]() {printf("2nd printer\n"); return 0;});
+   printer();
 
-	//printer = std::move(printer2);
+   auto printer2 = utl::Closure<int()>([]() {printf("2nd printer\n"); return 0;});
 
-	printer();
-	printer2();
+   //printer = std::move(printer2);
+
+   printer();
+   printer2();
 
 
-	//thasjdkl
-	utl::Closure<int()> printer3;
-	printer3 = []() {return 5;};
+   //thasjdkl
+   utl::Closure<int()> printer3 = []() {return 5;};
 
-	printf("\n\nHere's a %d\n\n", printer3());
-	
+   printf("\n\nHere's a %d\n\n", printer3());
+
 
 
 

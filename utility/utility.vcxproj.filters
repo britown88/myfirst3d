@@ -36,6 +36,9 @@
     <ClInclude Include="public\utility\Closure.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
+    <ClInclude Include="public\utility\Singleton.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">

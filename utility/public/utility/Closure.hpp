@@ -1,108 +1,108 @@
 #pragma once
 
 #include "MemoryBuffer.hpp"
+#include "Singleton.hpp"
 
 namespace utl {
 
-	class IClosureDestroy {
-	public:
-		~IClosureDestroy() {}
-		virtual void operator()(MemoryBuffer &buffer) = 0;
-	};
+   class IClosureDestroy {
+   public:
+      ~IClosureDestroy() {}
+      virtual void operator()(MemoryBuffer &buffer) = 0;
+   };
 
-	class ClosureDestroyDummy : public IClosureDestroy {
-	public:
-		void operator()(MemoryBuffer &buffer) {}
+   template<typename T>
+   class ClosureDestroy : public IClosureDestroy {
+   public:
+      void operator()(MemoryBuffer &buffer) {
+         if (buffer) {
+            ((T*)buffer.data())->~T();
+            buffer.clear();
+         }
+      }
+   };
 
-		static ClosureDestroyDummy &Instance() {
-			static ClosureDestroyDummy instance;
-			return instance;
-		}
-	};
+   
 
-	template<typename T> 
-	class ClosureDestroySingleton : public IClosureDestroy {
-	public:
-		void operator()(MemoryBuffer &buffer) {
-			if (buffer) {
-				((T*)buffer.data())->~T();
-				buffer.setSize(0);
-			}
-		}
+   template<typename T> class Closure {};
 
-		static ClosureDestroySingleton &Instance() {
-			static ClosureDestroySingleton instance;
-			return instance;
-		}
-	};
+   template<typename R, typename... Args>
+   class Closure<R(Args...)> {
+      typedef Closure<R(Args...)> Type;
 
-	template<typename T> class Closure {};
+      MemoryBuffer m_buffer;
+      R(*m_execute)(MemoryBuffer &, Args...);
+      IClosureDestroy *m_destroy;
 
-	template<typename R, typename... Args>
-	class Closure<R(Args...)> {
-		typedef Closure<R(Args...)> Type;
+      template<typename L>
+      void _copyFromLambda(L const &lambda) {
 
-		IClosureDestroy &m_destroy;
+         m_buffer.setSize(sizeof(L));
+         new(m_buffer.data()) L(lambda);
 
-		MemoryBuffer m_buffer;
-		R(*m_execute)(MemoryBuffer &, Args...);
+         m_execute = [](MemoryBuffer &buff, Args... args) {
+            return ((L*)buff.data())->operator()(args...);
+         };
+      }
 
-		template<typename L>
-		void _copyFromLambda(L const &lambda) {			
+      void _destroy() {
+         if (m_destroy) {
+            (*m_destroy)(m_buffer);
+         }
+      }
 
-			m_buffer.setSize(sizeof(L));
-			new(m_buffer.data()) L(lambda);
+      //copy constructors here are prvate... no copyrino!
+      Closure(Type const &other);
+      Type &operator=(Type const &other);
 
-			m_execute = [](MemoryBuffer &buff, Args... args) {
-				return ((L*)buff.data())->operator()(args...);
-			};
-		}
+   public:
 
-		//copy constructors here are prvate... no copyrino!
-		Closure(Type const &other) {}
-		Type &operator=(Type const &other) { return *this; }
+      //default
+      Closure() : m_execute(nullptr), m_destroy(nullptr) {}
 
-	public:		
+      //move
+      Closure(Type && other) :
+         m_buffer(std::move(other.m_buffer)),
+         m_execute(other.m_execute),
+         m_destroy(other.m_destroy) {}
 
-		//default
-		Closure() : m_execute(nullptr), m_destroy(ClosureDestroyDummy::Instance()) {}
+      Type &operator=(Type && other) {
+         _destroy();
+         m_buffer = std::move(other.m_buffer);
+         m_destroy = other.m_destroy;
+         m_execute = other.m_execute;
+         return *this;
+      }
 
-		//move
-		Closure(Type && other):m_buffer(std::move(other.m_buffer)), m_execute(other.m_execute), m_destroy(other.m_destroy) {}
+      //init from lambda
+      template<typename L>
+      Closure(L const &lambda) :m_destroy(&Singleton<ClosureDestroy<L>>::Instance()) {
+         _copyFromLambda(lambda);
+      }
 
-		Type &operator=(Type && other) {
-			m_destroy(m_buffer);			
-			m_buffer = std::move(other.m_buffer);
-			m_destroy = other.m_destroy;
-			m_execute = other.m_execute;
-			return *this;
-		}
+      template<typename L>
+      Type &operator=(L const &lambda) {
+         _destroy();
+         m_destroy = &Singleton<ClosureDestroy<L>>::Instance();
+         _copyFromLambda(lambda);
+         return *this;
+      }
 
-		//init from lambda
-		template<typename L>
-		Closure(L const &lambda):m_destroy(ClosureDestroySingleton<L>::Instance()) {
-			_copyFromLambda(lambda);
-		}
+      void clear() {
+         std::swap(*this, Type());
+      }
 
-		template<typename L>
-		Type &operator=(L const &lambda) {
-			m_destroy(m_buffer);
-			m_destroy = ClosureDestroySingleton<L>::Instance();
-			_copyFromLambda(lambda);
-			return *this;
-		}
+      //destruct
+      ~Closure() {
+         _destroy();
+      }
 
-		//destruct
-		~Closure() {
-			m_destroy(m_buffer);
-		}
-		
-		operator bool() {
-			return m_buffer;
-		}
+      explicit operator bool() {
+         return m_buffer;
+      }
 
-		R operator()(Args... args) {
-			return m_execute(m_buffer, args...);
-		}
-	};
+      R operator()(Args... args) {
+         return m_execute(m_buffer, args...);
+      }
+   };
 }

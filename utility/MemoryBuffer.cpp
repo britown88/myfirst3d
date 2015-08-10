@@ -2,62 +2,83 @@
 
 #include <malloc.h>
 
-namespace utl{
-   class MemoryBufferPrivate : public ObjectPrivate{
+namespace utl {
+   class MemoryBufferPrivate : public ObjectPrivate {
    public:
       DECLARE_UTILITY_PRIVATE(MemoryBuffer)
+
+      //lifehacks: union your stack-buffers with a double to force alignment!
+      union {
+         char sbo[sizeof(double)];
+         double align;
+      };
 
       void *data;
       size_t size, capacity;
 
-      MemoryBufferPrivate():size(0), capacity(0){
-         data = nullptr;
+      MemoryBufferPrivate() :size(0), capacity(0), data(nullptr) {
       }
 
-      ~MemoryBufferPrivate(){
+      ~MemoryBufferPrivate() {
          reset();
       }
 
-      void reset(){
-         if (data){
+      void reset() {
+         if (data) {
             free(data);
             data = nullptr;
          }
       }
 
-      void setSize(size_t newSize){
-         if (newSize > capacity){
-            reset();
-            data = malloc(newSize);
+      void setSize(size_t newSize) {
+         if (newSize > capacity) {
+            if (newSize >= sizeof(sbo)) {
+               reset();
+               data = malloc(newSize);
+            }
             size = capacity = newSize;
          }
-         else{
+         else {
             size = newSize;
-         }         
+         }
+      }
+
+      void *getData() {
+         if (size < sizeof(sbo)) {
+            return (void*)sbo;
+         }
+         else {
+            return data;
+         }
       }
    };
 
-   MemoryBuffer::MemoryBuffer():Object(new MemoryBufferPrivate){
+
+   MemoryBuffer::MemoryBuffer() :Object(new MemoryBufferPrivate) {
    }
 
-   void MemoryBuffer::setSize(size_t newSize){
+   void MemoryBuffer::clear() {
+      std::swap(*this, MemoryBuffer());
+   }
+
+   void MemoryBuffer::setSize(size_t newSize) {
       self()->setSize(newSize);
    }
-   void *MemoryBuffer::data(){
-      return self()->data;
+
+   void *MemoryBuffer::data() {
+      return self()->getData();
    }
 
-   size_t MemoryBuffer::getSize(){
+   size_t MemoryBuffer::getSize() {
       return self()->size;
    }
 
-   size_t MemoryBuffer::getCapacity(){
+   size_t MemoryBuffer::getCapacity() {
       return self()->capacity;
-
    }
 
    MemoryBuffer::operator bool() {
-	   return pImpl && self()->size > 0;
+      return pImpl && self()->size > 0;
    }
 }
 
