@@ -69,6 +69,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="public\utility\Closure.hpp" />
+    <ClInclude Include="public\utility\Color.hpp" />
+    <ClInclude Include="public\utility\Defs.hpp" />
     <ClInclude Include="public\utility\DLL_API.hpp" />
     <ClInclude Include="public\utility\HelloWorld.hpp" />
     <ClInclude Include="public\utility\MemoryBuffer.hpp" />
