@@ -21,12 +21,18 @@
     <ClInclude Include="public\platform\DLL_API.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
-    <ClInclude Include="public\platform\NativeWindowFactory.hpp">
+    <ClInclude Include="public\platform\Object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="public\platform\Window.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="NativeWindowFactory.cpp">
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
