@@ -25,8 +25,9 @@ namespace app {
 
          gfx::Renderer r(w.getNative());
          while (true) {
-            r.clear({0.0f, 0.0f, 0.0f, 1.0f});
+            r.clear({rand()/(float)RAND_MAX, 0.0f, 0.0f, 1.0f});
             r.finish();
+            r.flush();
             w.pollEvents();
 
             if (w.shouldClose()) {

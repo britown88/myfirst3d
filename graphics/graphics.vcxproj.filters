@@ -38,5 +38,8 @@
     <ClInclude Include="public\graphics\Object.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
+    <ClInclude Include="DrawQueue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

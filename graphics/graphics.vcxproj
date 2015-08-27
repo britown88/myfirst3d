@@ -133,6 +133,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DrawQueue.hpp" />
     <ClInclude Include="public\graphics\DLL_API.hpp" />
     <ClInclude Include="public\graphics\INativeWindow.hpp" />
     <ClInclude Include="public\graphics\Object.hpp" />

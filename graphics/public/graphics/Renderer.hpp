@@ -15,7 +15,7 @@ namespace gfx {
       
       void clear(utl::ColorRGBAf const &c);
       void finish();
-
+      void flush();
 
       DECLARE_GRAPHICS_PUBLIC(Renderer)
    };
