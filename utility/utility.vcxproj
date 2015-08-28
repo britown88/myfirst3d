@@ -75,6 +75,7 @@
     <ClInclude Include="public\utility\HelloWorld.hpp" />
     <ClInclude Include="public\utility\MemoryBuffer.hpp" />
     <ClInclude Include="public\utility\Object.hpp" />
+    <ClInclude Include="public\utility\Geom.hpp" />
     <ClInclude Include="public\utility\Singleton.hpp" />
     <ClInclude Include="public\utility\Vector.hpp" />
   </ItemGroup>

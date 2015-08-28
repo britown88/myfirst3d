@@ -11,7 +11,5 @@ namespace app {
       ~App();
       void start();
    };
-
-   App const &getApp();
 }
 

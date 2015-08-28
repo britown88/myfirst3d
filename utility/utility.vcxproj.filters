@@ -45,6 +45,9 @@
     <ClInclude Include="public\utility\Color.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
+    <ClInclude Include="public\utility\Geom.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">

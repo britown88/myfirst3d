@@ -4,6 +4,8 @@
 #include "INativeWindow.hpp"
 
 #include "utility/Color.hpp"
+#include "utility/Geom.hpp"
+
 
 namespace gfx {
 
@@ -13,11 +15,18 @@ namespace gfx {
    public:
       Renderer(INativeWindow *wnd);
 
-      void beginRender() const;
-      
-      void clear(utl::ColorRGBAf const &c);
+      //utility
       void finish();
       void flush() const;
+      void beginRender() const;
+      size_t getWidth() const;
+      size_t getHeight() const;      
+
+      //render functions
+      void clear(utl::ColorRGBAf const &c);
+      void viewport(utl::Recti const &r);
+
+      
 
       DECLARE_GRAPHICS_PUBLIC(Renderer)
    };

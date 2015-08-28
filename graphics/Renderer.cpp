@@ -42,13 +42,25 @@ namespace gfx {
 
       DECLARE_GRAPHICS_PRIVATE(Renderer)
    };
-
-   
+      
    Renderer::Renderer(INativeWindow *wnd) :Object(new RendererPrivate(wnd)){
    }
    
    void Renderer::beginRender() const {
       self()->m_wnd->beginRender();
+   }
+   void Renderer::finish() {
+      self()->swapQueues();
+   }
+   size_t Renderer::getWidth() const {
+      return self()->m_wnd->getWidth();
+   }
+   size_t Renderer::getHeight() const {
+      return self()->m_wnd->getHeight();
+   }
+   void Renderer::flush() const {
+      self()->getQueue()->draw();
+      self()->m_wnd->swapBuffers();
    }
 
    void Renderer::clear(utl::ColorRGBAf const &c) {
@@ -57,13 +69,19 @@ namespace gfx {
          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       });
    }
+   void Renderer::viewport(utl::Recti const &r) {
+      int winHeight = self()->m_wnd->getHeight();
+      utl::Recti bounds = { 
+         r.top.x, 
+         winHeight - r.top.y - utl::height(r),
+         utl::width(r), 
+         utl::height(r)
+      };
 
-   void Renderer::finish() {
-      self()->swapQueues();
+      self()->draw([=]() {
+         glViewport(bounds.top.x, bounds.top.y, bounds.bot.x, bounds.bot.y);
+      });
    }
 
-   void Renderer::flush() const{
-      self()->getQueue()->draw();
-      self()->m_wnd->swapBuffers();
-   }
+   
 }

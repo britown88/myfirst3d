@@ -1,4 +1,5 @@
 #include "App.hpp"
+#include "Game.hpp"
 
 #include "platform/Window.hpp"
 #include "graphics/Renderer.hpp"
@@ -41,8 +42,7 @@ namespace app {
          }
       }
    };
-
-
+   
    class App::Impl {
    public:
       Impl() {
@@ -61,12 +61,16 @@ namespace app {
          RenderThread rThread(r);
          rThread.start();
 
-         while (true) {
-            r.clear({rand()/(float)RAND_MAX, 0.0f, 0.0f, 1.0f});
-            r.finish();
-            w.pollEvents();
+         Game g(r, w);
 
-            if (w.shouldClose()) {
+         g.start();
+
+         while (true) {
+            g.step();
+
+            
+
+            if (g.shouldStop()) {
                break;
             }
          }
@@ -75,16 +79,11 @@ namespace app {
       }
    };
 
-   static App *g_app = nullptr;
-
-   App::App() :pImpl(new Impl()) { g_app = this; }
+   App::App() :pImpl(new Impl()) {}
    App::~App() {}
 
    void App::start() {
       pImpl->start();
    }
 
-   App const &getApp() {
-      return *g_app;
-   }
 }
