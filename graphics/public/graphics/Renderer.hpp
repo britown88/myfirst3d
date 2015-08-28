@@ -12,10 +12,12 @@ namespace gfx {
    class GRAPHICS_API Renderer : public Object{
    public:
       Renderer(INativeWindow *wnd);
+
+      void beginRender() const;
       
       void clear(utl::ColorRGBAf const &c);
       void finish();
-      void flush();
+      void flush() const;
 
       DECLARE_GRAPHICS_PUBLIC(Renderer)
    };

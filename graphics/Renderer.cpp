@@ -11,7 +11,7 @@
 namespace gfx {
    class RendererPrivate : public ObjectPrivate {
       std::shared_ptr<DrawQueue> m_workingQueue, m_drawQueue;
-      std::mutex m_mutex;
+      mutable std::mutex m_mutex;
 
    public:
       INativeWindow *m_wnd;
@@ -33,7 +33,7 @@ namespace gfx {
          m_mutex.unlock();
       }
 
-      std::shared_ptr<DrawQueue> getQueue() {
+      std::shared_ptr<DrawQueue> getQueue() const {
          m_mutex.lock();
          auto out = m_drawQueue;
          m_mutex.unlock();
@@ -45,6 +45,10 @@ namespace gfx {
 
    
    Renderer::Renderer(INativeWindow *wnd) :Object(new RendererPrivate(wnd)){
+   }
+   
+   void Renderer::beginRender() const {
+      self()->m_wnd->beginRender();
    }
 
    void Renderer::clear(utl::ColorRGBAf const &c) {
@@ -58,7 +62,7 @@ namespace gfx {
       self()->swapQueues();
    }
 
-   void Renderer::flush() {
+   void Renderer::flush() const{
       self()->getQueue()->draw();
       self()->m_wnd->swapBuffers();
    }

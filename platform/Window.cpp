@@ -6,7 +6,7 @@
 
 namespace plat {
    class GLFWWindow : public gfx::INativeWindow {
-      GLFWwindow *m_window;
+      GLFWwindow *m_window, *m_threadWin;
       bool m_success;
       size_t m_width, m_height;
    public:
@@ -20,16 +20,20 @@ namespace plat {
          if (flags&Window::FULLSCREEN) {
             monitor = glfwGetPrimaryMonitor();
          }
-         
-         m_window = glfwCreateWindow(width, height, title, monitor, nullptr);
 
-         if (!m_window) {
+         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+         m_window = glfwCreateWindow(1, 1, "", NULL, NULL);
+         
+         glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+         m_threadWin = glfwCreateWindow(width, height, title, monitor, m_window);
+
+         if (!m_window || !m_threadWin) {
             glfwTerminate();
             return;
          }
 
          //glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-         glfwGetFramebufferSize(m_window, (int*)&m_width, (int*)&m_height);
+         glfwGetFramebufferSize(m_threadWin, (int*)&m_width, (int*)&m_height);
          glfwMakeContextCurrent(m_window);
 
          m_success = true;
@@ -46,23 +50,24 @@ namespace plat {
       }
 
       void beginRender() {
-
+         glfwMakeContextCurrent(m_threadWin);
       }
 
       void swapBuffers() {
-         glfwSwapBuffers(m_window);
+         glfwSwapBuffers(m_threadWin);
       }
 
       void destroy() {
          if (m_window) {
             glfwDestroyWindow(m_window);
+            glfwDestroyWindow(m_threadWin);
             glfwTerminate();
          }         
          delete this;
       }
 
       bool shouldClose() {
-         return glfwWindowShouldClose(m_window) != 0;
+         return glfwWindowShouldClose(m_threadWin) != 0;
       }
    };
 

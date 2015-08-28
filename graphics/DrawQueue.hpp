@@ -8,31 +8,36 @@
 
 
 class DrawQueue {
-   const static size_t PageSize = 1024;
+   const static size_t PageSize = 4096;
    struct Page {
       byte data[PageSize];
       size_t size;
    };
 
-   class ICallDestroy {
+   class ICall {
    public:
-      virtual void operator()(void *buffer) {}
+      virtual size_t size() = 0;
+      virtual void destroy(void *buffer) = 0;
+      virtual void execute(void *buffer) = 0;
    };
 
    template<typename T>
-   class CallDestroy : public ICallDestroy {
+   class Call : public ICall {
    public:
-      void operator()(void *buffer) {
-         if (buffer) {
-            ((T*)buffer)->~T();
-         }
-      }
-   };
+      static const size_t m_size = sizeof(Call*) + sizeof(T);
+      static const size_t m_padding = m_size % sizeof(void*);
+      static const size_t m_paddedSize = m_size + (m_padding ? sizeof(void*) - m_padding : 0);
 
-   struct Call {
-      size_t size; //sizeof(L) + sizeof(Call)
-      ICallDestroy *destroy;
-      void(*execute)(void *);
+      size_t size() {
+         return m_paddedSize;
+      }
+
+      void destroy(void *buffer) {
+         ((T*)buffer)->~T();
+      }
+      void execute(void *buffer) {
+         ((T*)buffer)->operator()();
+      }
    };
 
    std::vector<Page> m_pages;
@@ -44,18 +49,20 @@ public:
       for (auto && p : m_pages) {
          size_t i = 0;
          while (i < p.size) {
-            Call *c = (Call *)(p.data + i);
-            if (c->size > sizeof(Call)) {
-               c->destroy->operator()((void*)(p.data + i + sizeof(Call)));
-            }
-            i += c->size;
+            ICall *c = *(ICall**)(p.data + i);
+
+            c->destroy((void*)(p.data + i + sizeof(ICall*)));
+            i += c->size();
          }
       }
    }
 
    template<typename L>
    void push(L && lambda) {
-      size_t callSize = sizeof(Call) + sizeof(L);
+
+      ICall *call = &utl::Singleton<Call<typename std::decay<L>::type>>::Instance();
+
+      size_t callSize = call->size();
 
       if (callSize > PageSize) {
          return;
@@ -66,13 +73,9 @@ public:
       }
 
       auto &p = m_pages.back();
-      Call *c = (Call *)(p.data + p.size);
 
-      c->size = callSize;
-      c->destroy = &utl::Singleton<CallDestroy<L>>::Instance();
-      c->execute = [](void *data) { ((L*)data)->operator()(); };
-
-      new(p.data + p.size + sizeof(Call)) L(lambda);
+      *(ICall**)(p.data + p.size) = call;
+      new(p.data + p.size + sizeof(ICall*)) L(std::forward<L>(lambda));
 
       p.size += callSize;
    }
@@ -81,11 +84,10 @@ public:
       for (auto && p : m_pages) {
          size_t i = 0;
          while (i < p.size) {
-            Call *c = (Call *)(p.data + i);
-            if (c->size > sizeof(Call)) {
-               c->execute((void*)(p.data + i + sizeof(Call)));
-            }
-            i += c->size;
+            ICall *c = *(ICall**)(p.data + i);
+
+            c->execute((void*)(p.data + i + sizeof(ICall*)));
+            i += c->size();
          }
       }
    }
