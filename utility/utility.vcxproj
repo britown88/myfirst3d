@@ -73,6 +73,7 @@
     <ClInclude Include="public\utility\Defs.hpp" />
     <ClInclude Include="public\utility\DLL_API.hpp" />
     <ClInclude Include="public\utility\HelloWorld.hpp" />
+    <ClInclude Include="public\utility\Matrix.hpp" />
     <ClInclude Include="public\utility\MemoryBuffer.hpp" />
     <ClInclude Include="public\utility\Object.hpp" />
     <ClInclude Include="public\utility\Geom.hpp" />
@@ -81,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloWorld.cpp" />
+    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
     <ClCompile Include="Object.cpp" />
   </ItemGroup>

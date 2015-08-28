@@ -4,6 +4,9 @@ namespace app {
    class Game::Impl {
       gfx::Renderer &m_renderer;
       plat::Window &m_window;
+
+
+
    public:
       Impl(gfx::Renderer &r, plat::Window &w):m_renderer(r), m_window(w) {}
       ~Impl() {}
@@ -17,6 +20,7 @@ namespace app {
       }
 
       void render() {
+         m_renderer.viewport({0, 0, (int)m_renderer.getWidth(), (int)m_renderer.getHeight()});
          m_renderer.clear({ 0.0f, 0.0f, 0.0f, 1.0f });
 
          //draw!
