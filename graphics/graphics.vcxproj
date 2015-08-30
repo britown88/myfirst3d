@@ -124,8 +124,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\utility\utility.vcxproj">
@@ -134,10 +136,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DrawQueue.hpp" />
+    <ClInclude Include="ModelPrivate.hpp" />
     <ClInclude Include="public\graphics\DLL_API.hpp" />
+    <ClInclude Include="public\graphics\Model.hpp" />
     <ClInclude Include="public\graphics\INativeWindow.hpp" />
     <ClInclude Include="public\graphics\Object.hpp" />
     <ClInclude Include="public\graphics\Renderer.hpp" />
+    <ClInclude Include="public\graphics\Shader.hpp" />
+    <ClInclude Include="ShaderPrivate.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

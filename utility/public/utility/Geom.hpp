@@ -5,10 +5,17 @@ namespace utl {
    template<typename T>
    struct Vec2 {
       T x, y;
+   };   
+
+   template<typename T>
+   struct Vec3 {
+      T x, y, z;
    };
 
    typedef Vec2<int> Int2;
    typedef Vec2<float> Float2;
+   typedef Vec3<int> Int3;
+   typedef Vec3<float> Float3;
 
    template<typename T>
    struct Rect {

@@ -1,18 +1,36 @@
 #include "Game.hpp"
 
+#include "graphics/Model.hpp"
+
 namespace app {
    class Game::Impl {
       gfx::Renderer &m_renderer;
       plat::Window &m_window;
 
+      gfx::Model *buildTestModel() {
 
+         std::vector<gfx::FVF_Pos2_Col4> vertices = {
+            { { 0.0f, 0.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } },
+            { { 1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } },
+            { { 1.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } },
+            { { 0.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } }
+         };
+
+         std::vector<int> indices = { 0, 1, 2, 3 };
+
+         return m_renderer.getModelFactory().create(
+            vertices.data(), 
+            vertices.size(), 
+            indices.data(), 
+            indices.size());
+      }
 
    public:
       Impl(gfx::Renderer &r, plat::Window &w):m_renderer(r), m_window(w) {}
       ~Impl() {}
 
       void start() {
-
+         auto model = buildTestModel();
       }
       
       void update() {

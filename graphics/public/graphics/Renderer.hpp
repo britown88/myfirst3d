@@ -2,6 +2,7 @@
 
 #include "Object.hpp"
 #include "INativeWindow.hpp"
+#include "Model.hpp"
 
 #include "utility/Color.hpp"
 #include "utility/Geom.hpp"
@@ -20,7 +21,8 @@ namespace gfx {
       void flush() const;
       void beginRender() const;
       size_t getWidth() const;
-      size_t getHeight() const;      
+      size_t getHeight() const; 
+      ModelFactory const &getModelFactory() const;
 
       //render functions
       void clear(utl::ColorRGBAf const &c);

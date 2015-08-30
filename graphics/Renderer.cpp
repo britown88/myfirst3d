@@ -1,5 +1,6 @@
 #include "graphics/Renderer.hpp"
 #include "DrawQueue.hpp"
+#include "ModelPrivate.hpp"
 
 #include <Windows.h> //TODO: kill this fucking shit with fire later fuck you cortana
 #include <gl/GL.h>
@@ -12,6 +13,7 @@ namespace gfx {
    class RendererPrivate : public ObjectPrivate {
       std::shared_ptr<DrawQueue> m_workingQueue, m_drawQueue;
       mutable std::mutex m_mutex;
+      ModelFactory m_modelFactory;
 
    public:
       INativeWindow *m_wnd;
@@ -39,6 +41,9 @@ namespace gfx {
          m_mutex.unlock();
          return out;
       }
+      ModelFactory const &getModelFactory() const {
+         return m_modelFactory;
+      }
 
       DECLARE_GRAPHICS_PRIVATE(Renderer)
    };
@@ -61,6 +66,9 @@ namespace gfx {
    void Renderer::flush() const {
       self()->getQueue()->draw();
       self()->m_wnd->swapBuffers();
+   }
+   ModelFactory const &Renderer::getModelFactory() const {
+      return self()->getModelFactory();
    }
 
    void Renderer::clear(utl::ColorRGBAf const &c) {

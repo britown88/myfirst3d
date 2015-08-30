@@ -24,6 +24,12 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="public\graphics\INativeWindow.hpp">
@@ -39,6 +45,18 @@
       <Filter>Header Files\public</Filter>
     </ClInclude>
     <ClInclude Include="DrawQueue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="public\graphics\Model.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelPrivate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="public\graphics\Shader.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderPrivate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
