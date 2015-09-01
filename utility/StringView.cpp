@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <string>
 #include <string.h>
+
 namespace utl {
    struct StringHash {
       size_t operator()(StringView str) const {
@@ -46,5 +47,10 @@ namespace utl {
 
    StringView internString(StringView str) {
       return Singleton<StringTable>::Instance().get(str);
+   }
+
+   size_t stringViewHash(StringView str) {
+      static std::hash<const void*> hashFunc;
+      return hashFunc(str);
    }
 }

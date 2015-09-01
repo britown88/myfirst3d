@@ -30,6 +30,9 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="public\graphics\INativeWindow.hpp">
@@ -57,6 +60,12 @@
       <Filter>Header Files\public</Filter>
     </ClInclude>
     <ClInclude Include="ShaderPrivate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="public\graphics\Texture.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="TexturePrivate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

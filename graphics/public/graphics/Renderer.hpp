@@ -4,6 +4,7 @@
 #include "INativeWindow.hpp"
 #include "Model.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 
 #include "utility/Color.hpp"
 #include "utility/Geom.hpp"
@@ -11,8 +12,6 @@
 #include "utility/StringView.hpp"
 
 namespace gfx {
-
-   
 
    class RendererPrivate;
 
@@ -28,6 +27,7 @@ namespace gfx {
       size_t getHeight() const; 
       ModelFactory const &getModelFactory() const;
       ShaderFactory const &getShaderFactory() const;
+      TextureManager const &getTextureManager() const;
 
       //render functions
       void clear(utl::ColorRGBAf const &c);
@@ -37,6 +37,9 @@ namespace gfx {
       void setFloat2(utl::StringView u, utl::Float2 const &value);
       void setMatrix(utl::StringView u, utl::Matrix const &value);
       void setColor(utl::StringView u, utl::ColorRGBAf const &value);
+      void setTextureSlot(utl::StringView u, TextureSlot const &value);
+
+      void bindTexture(Texture *t, TextureSlot slot);      
 
       void renderModel(Model *m);      
 

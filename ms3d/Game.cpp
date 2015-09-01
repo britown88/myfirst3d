@@ -13,11 +13,11 @@ namespace app {
 
       gfx::Model *buildTestModel() {
 
-         std::vector<gfx::FVF_Pos2_Col4> vertices = {
-            { { 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 1.0f } },
-            { { 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
-            { { 1.0f, 1.0f },{ 0.0f, 0.0f, 1.0f, 1.0f } },
-            { { 0.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } }
+         std::vector<gfx::FVF_Pos2_Tex2_Col4> vertices = {
+            { { 0.0f, 0.0f },{ 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { 1.0f, 0.0f },{ 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
+            { { 1.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, 1.0f, 1.0f } },
+            { { 0.0f, 1.0f },{ 0.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } }
          };
 
          std::vector<int> indices = { 0, 1, 3, 1, 2, 3 };
@@ -35,13 +35,17 @@ namespace app {
 
       gfx::Shader *m_shader;
       gfx::Model *m_model;
+      gfx::Texture *m_texture;
 
       void start() {
          auto &r = m_renderer;
 
          m_model = buildTestModel();
-         m_shader = r.getShaderFactory().create("assets/shaders.glsl", 0);
-         
+         m_shader = r.getShaderFactory().create("assets/shaders.glsl", gfx::DiffuseTexture);
+
+         gfx::TextureRequest request(utl::internString("assets/00.png"));
+
+         m_texture = r.getTextureManager().get(request);
       }
       
       void update() {
@@ -54,6 +58,9 @@ namespace app {
          auto uView = utl::internString("uViewMatrix");
          auto uModel = utl::internString("uModelMatrix");
          auto uColor = utl::internString("uColorTransform");
+         auto uTexture = utl::internString("uTexMatrix");
+         auto uTextureSlot = utl::internString("uTexture");
+         
 
          r.viewport({ 0, 0, (int)r.getWidth(), (int)r.getHeight() });
          r.clear({ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -65,12 +72,18 @@ namespace app {
          utl::Matrix viewTransform =
             utl::Matrix::ortho(0.0f, (float)r.getWidth(), (float)r.getHeight(), 0.0f, 1.0f, -1.0f);
 
+         utl::Matrix texTransform = utl::Matrix::identity();
+
          utl::ColorRGBAf colorTransform = { 1.0f, 1.0f, 1.0f, 1.0f };
 
          r.setShader(m_shader);
          r.setMatrix(uView, viewTransform);
          r.setMatrix(uModel, modelTransform);
+         r.setMatrix(uTexture, texTransform);
          r.setColor(uColor, colorTransform);
+
+         r.bindTexture(m_texture, 0);
+         r.setTextureSlot(uTextureSlot, 0);
 
          r.renderModel(m_model);
 

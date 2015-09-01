@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>./public/; ../utility/public/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./public/; ../utility/public/; ../libpng/public;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CompilingGraphicsDLL;_CRT_SECURE_NO_WARNINGS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -103,7 +103,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>./public/; ../utility/public/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./public/; ../utility/public/; ../libpng/public;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CompilingGraphicsDLL;_CRT_SECURE_NO_WARNINGS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -136,8 +136,12 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\libpng\libpng.vcxproj">
+      <Project>{3c2c530b-1813-4914-b9a7-47e94c44f737}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\utility\utility.vcxproj">
       <Project>{03c6d42b-4fea-4a3e-af1d-cdd0c0729dc3}</Project>
     </ProjectReference>
@@ -151,7 +155,9 @@
     <ClInclude Include="public\graphics\Object.hpp" />
     <ClInclude Include="public\graphics\Renderer.hpp" />
     <ClInclude Include="public\graphics\Shader.hpp" />
+    <ClInclude Include="public\graphics\Texture.hpp" />
     <ClInclude Include="ShaderPrivate.hpp" />
+    <ClInclude Include="TexturePrivate.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

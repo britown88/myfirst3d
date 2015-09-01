@@ -170,6 +170,9 @@ namespace gfx {
       void setColor(Uniform u, utl::ColorRGBAf const &value) {
          glUniform4fv(u, 1, (float*)&value);
       }
+      void setTexSlot(Uniform u, TextureSlot const &value) {
+         glUniform1i(u, value);
+      }
    };
 
    Shader *ShaderFactory::create(const char *file, int params) const {
@@ -185,4 +188,5 @@ namespace gfx {
    void shaderSetFloat2(Shader *self, Uniform u, utl::Float2 const &value) { self->setFloat2(u, value); }
    void shaderSetMatrix(Shader *self, Uniform u, utl::Matrix const &value) { self->setMatrix(u, value); }
    void shaderSetColor(Shader *self, Uniform u, utl::ColorRGBAf const &value) { self->setColor(u, value); }
+   void shaderSetTextureSlot(Shader *self, Uniform u, TextureSlot const &value) { self->setTexSlot(u, value); }
 }

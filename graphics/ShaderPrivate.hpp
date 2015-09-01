@@ -1,6 +1,8 @@
 #pragma once
 
 #include "graphics/Shader.hpp"
+#include "graphics/Texture.hpp"
+
 #include "utility/Geom.hpp"
 #include "utility/Matrix.hpp"
 #include "utility/Color.hpp"
@@ -17,5 +19,6 @@ namespace gfx {
    void shaderSetFloat2(Shader *self, Uniform u, utl::Float2 const &value);
    void shaderSetMatrix(Shader *self, Uniform u, utl::Matrix const &value);
    void shaderSetColor(Shader *self, Uniform u, utl::ColorRGBAf const &value);
+   void shaderSetTextureSlot(Shader *self, Uniform u, TextureSlot const &slot);
 
 }

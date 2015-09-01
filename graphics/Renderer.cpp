@@ -3,6 +3,7 @@
 #include "DrawQueue.hpp"
 #include "ModelPrivate.hpp"
 #include "ShaderPrivate.hpp"
+#include "TexturePrivate.hpp"
 
 #include <Windows.h> //TODO: kill this fucking shit with fire later fuck you cortana
 #include <gl/GL.h>
@@ -17,6 +18,7 @@ namespace gfx {
       mutable std::mutex m_mutex;
       ModelFactory m_modelFactory;
       ShaderFactory m_shaderFactory;
+      TextureManager m_textureManager;
 
       Shader *m_activeShader;
       Model *m_activeModel;
@@ -50,6 +52,7 @@ namespace gfx {
       }
       ModelFactory const &getModelFactory() const { return m_modelFactory;  }
       ShaderFactory const &getShaderFactory() const { return m_shaderFactory; }
+      TextureManager const &getTextureManager() const { return m_textureManager; }
 
       void clear(utl::ColorRGBAf const &c) {
          draw([=]() {
@@ -105,6 +108,21 @@ namespace gfx {
          });
       }
 
+      void setTextureSlot(utl::StringView u, TextureSlot const &value) {
+         draw([=]() {
+            if (m_activeShader) {
+               auto uni = shaderGetUniform(m_activeShader, u);
+               shaderSetTextureSlot(m_activeShader, uni, value);
+            }
+         });
+      }
+
+      void bindTexture(Texture *t, TextureSlot slot) {
+         draw([=]() {
+            textureBind(t, slot);
+         });
+      }
+
       void renderModel(Model *m) { 
          draw([=]() {
             if (m != m_activeModel) {
@@ -141,6 +159,7 @@ namespace gfx {
    }
    ModelFactory const &Renderer::getModelFactory() const { return self()->getModelFactory(); }
    ShaderFactory const &Renderer::getShaderFactory() const { return self()->getShaderFactory(); }
+   TextureManager const &Renderer::getTextureManager() const { return self()->getTextureManager(); }
 
    void Renderer::clear(utl::ColorRGBAf const &c) { self()->clear(c); }
    void Renderer::viewport(utl::Recti const &r) { self()->viewport(r); }
@@ -149,6 +168,9 @@ namespace gfx {
    void Renderer::setFloat2(utl::StringView u, utl::Float2 const &value) { self()->setFloat2(u, value); }
    void Renderer::setMatrix(utl::StringView u, utl::Matrix const &value) { self()->setMatrix(u, value); }
    void Renderer::setColor(utl::StringView u, utl::ColorRGBAf const &value) { self()->setColor(u, value); }   
+   void Renderer::setTextureSlot(utl::StringView u, TextureSlot const &value) { self()->setTextureSlot(u, value); }
+
+   void Renderer::bindTexture(Texture *t, TextureSlot slot) { self()->bindTexture(t, slot); }
    void Renderer::renderModel(Model *m) { self()->renderModel(m); }
 
    
