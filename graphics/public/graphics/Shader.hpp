@@ -11,7 +11,7 @@ namespace gfx {
 
    class GRAPHICS_API ShaderFactory {
    public:
-      Shader *create(const char *file, int params);
+      Shader *create(const char *file, int params) const;
    };
 
    void shaderDestroy(Shader *self);

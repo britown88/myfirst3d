@@ -51,6 +51,9 @@
     <ClInclude Include="public\utility\Matrix.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
+    <ClInclude Include="public\utility\StringView.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -63,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StringView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

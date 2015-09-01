@@ -2,6 +2,10 @@
 
 #include "graphics/Model.hpp"
 
+#include "utility/StringView.hpp"
+#include "utility/Matrix.hpp"
+#include "utility/Color.hpp"
+
 namespace app {
    class Game::Impl {
       gfx::Renderer &m_renderer;
@@ -10,13 +14,13 @@ namespace app {
       gfx::Model *buildTestModel() {
 
          std::vector<gfx::FVF_Pos2_Col4> vertices = {
-            { { 0.0f, 0.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } },
-            { { 1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } },
-            { { 1.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } },
+            { { 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
+            { { 1.0f, 1.0f },{ 0.0f, 0.0f, 1.0f, 1.0f } },
             { { 0.0f, 1.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } }
          };
 
-         std::vector<int> indices = { 0, 1, 2, 3 };
+         std::vector<int> indices = { 0, 1, 3, 1, 2, 3 };
 
          return m_renderer.getModelFactory().create(
             vertices.data(), 
@@ -29,8 +33,15 @@ namespace app {
       Impl(gfx::Renderer &r, plat::Window &w):m_renderer(r), m_window(w) {}
       ~Impl() {}
 
+      gfx::Shader *m_shader;
+      gfx::Model *m_model;
+
       void start() {
-         auto model = buildTestModel();
+         auto &r = m_renderer;
+
+         m_model = buildTestModel();
+         m_shader = r.getShaderFactory().create("assets/shaders.glsl", 0);
+         
       }
       
       void update() {
@@ -38,12 +49,32 @@ namespace app {
       }
 
       void render() {
-         m_renderer.viewport({0, 0, (int)m_renderer.getWidth(), (int)m_renderer.getHeight()});
-         m_renderer.clear({ 0.0f, 0.0f, 0.0f, 1.0f });
+         auto &r = m_renderer;
 
-         //draw!
+         auto uView = utl::internString("uViewMatrix");
+         auto uModel = utl::internString("uModelMatrix");
+         auto uColor = utl::internString("uColorTransform");
 
-         m_renderer.finish();
+         r.viewport({ 0, 0, (int)r.getWidth(), (int)r.getHeight() });
+         r.clear({ 1.0f, 0.0f, 0.0f, 1.0f });
+
+         utl::Matrix modelTransform =
+            utl::Matrix::translate({ 100.0f, 100.0f }) *
+            utl::Matrix::scale({ 100.0f, 100.0f });
+
+         utl::Matrix viewTransform =
+            utl::Matrix::ortho(0.0f, (float)r.getWidth(), (float)r.getHeight(), 0.0f, 1.0f, -1.0f);
+
+         utl::ColorRGBAf colorTransform = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+         r.setShader(m_shader);
+         r.setMatrix(uView, viewTransform);
+         r.setMatrix(uModel, modelTransform);
+         r.setColor(uColor, colorTransform);
+
+         r.renderModel(m_model);
+
+         r.finish();
       }
 
       void processInput() {

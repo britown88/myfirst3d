@@ -1,5 +1,3 @@
-#version 140
-
 #ifdef FRAGMENT
    out vec4 outColor;
    smooth in vec4 vColor;
@@ -21,9 +19,11 @@
 #endif
 
 #ifdef VERTEX
-   layout(std140) uniform uCamera{
-      mat4 uViewMatrix;
-   };
+   //layout(std140) uniform uCamera{
+   //   mat4 uViewMatrix;
+   //};
+
+   uniform mat4 uViewMatrix;
 
    uniform mat4 uModelMatrix;
    uniform vec4 uColorTransform;
@@ -31,7 +31,7 @@
    in vec2 aPosition;
    in vec4 aColor;
 
-   smooth out vec4 vColor;
+   out vec4 vColor;
 
    #ifdef DIFFUSE_TEXTURE
    uniform mat4 uTexMatrix;

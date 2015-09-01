@@ -10,10 +10,11 @@
 namespace gfx {
    class Model;
 
-   enum class VertexAttribute : int {
+   enum class VertexAttribute : unsigned int {
       Pos2 = 0,
       Tex2,
-      Col4
+      Col4,
+      COUNT
    };
 
    class FVF_Pos2_Tex2_Col4 {
