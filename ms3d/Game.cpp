@@ -5,6 +5,10 @@
 #include "utility/StringView.hpp"
 #include "utility/Matrix.hpp"
 #include "utility/Color.hpp"
+#include "utility/SExpressions.hpp"
+#include "utility/String.hpp"
+
+#include <assert.h>
 
 namespace app {
    class Game::Impl {
@@ -46,6 +50,29 @@ namespace app {
          gfx::TextureRequest request(utl::internString("assets/00.png"));
 
          m_texture = r.getTextureManager().get(request);
+
+         utl::String str1("lol");
+         utl::String str2;
+
+         utl::SExpr modelexp(m_model);
+         utl::SExpr intexp(1);
+         utl::SExpr floatexp(2.0f);
+         utl::SExpr stringexp(utl::String("hello"));
+         utl::SExpr symbexp(utl::internString("hellohello"));
+         utl::SExpr listexp(utl::Sublist{});
+
+         auto i = intexp.getInt();
+         auto m = modelexp.getObj<gfx::Model*>();
+
+         
+
+         auto f = floatexp.getFloat();
+         auto str = stringexp.getStr();
+         auto s = symbexp.getSymb();
+         auto l = listexp.getList();
+
+
+
       }
       
       void update() {

@@ -18,6 +18,7 @@ namespace utl {
       size_t getSize();
       size_t getCapacity();
       void *data();
+      const void *data() const;
 
       explicit operator bool();
 

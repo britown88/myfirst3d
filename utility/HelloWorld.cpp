@@ -49,4 +49,8 @@ namespace utl {
       printf(self()->data.c_str());
    }
 
+   utl::String HelloWorld::getString(const char*str) {
+      return str;
+   }
+
 }

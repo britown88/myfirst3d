@@ -49,7 +49,7 @@ namespace utl {
       }
 
       Vector(Vector<T> const &other) {
-         for (auto &&o : other) {
+         for (auto && o : other) {
             push_back(o);
          }
       }
@@ -86,6 +86,15 @@ namespace utl {
          return *this;
       }
 
+      T const *begin() const {
+         return (T*)m_buffer.data();
+      }
+
+      T const *end() const {
+         return begin() + size();
+      }
+
+
       T *begin() {
          return (T*)m_buffer.data();
       }
@@ -121,7 +130,6 @@ namespace utl {
       }
 
       void clear() {
-
          while (m_size > 0) {
             begin()[--m_size].~T();
          }            
@@ -134,7 +142,7 @@ namespace utl {
          m_capacity = 0;
       }
 
-      size_t size() {
+      size_t size() const {
          return m_size;
       }
 

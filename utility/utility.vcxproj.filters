@@ -57,6 +57,15 @@
     <ClInclude Include="public\utility\ObjectHash.h">
       <Filter>Header Files\public</Filter>
     </ClInclude>
+    <ClInclude Include="public\utility\String.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\utility\SExpressions.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\utility\RTTI.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -72,6 +81,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StringView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="String.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SExpressions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

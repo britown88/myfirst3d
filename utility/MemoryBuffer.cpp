@@ -43,7 +43,7 @@ namespace utl {
          }
       }
 
-      void *getData() {
+      void *getData() const{
          if (size < sizeof(sbo)) {
             return (void*)sbo;
          }
@@ -66,6 +66,10 @@ namespace utl {
    }
 
    void *MemoryBuffer::data() {
+      return self()->getData();
+   }
+
+   const void *MemoryBuffer::data() const{
       return self()->getData();
    }
 

@@ -3,6 +3,7 @@
 #include "Object.hpp"
 #include "Vector.hpp"
 #include "Closure.hpp"
+#include "String.hpp"
 
 namespace utl {
    class HelloWorldPrivate;
@@ -19,6 +20,8 @@ namespace utl {
       }
 
       Closure<int()> createNumberPrinter(int numberToPrint);
+
+      utl::String getString(const char*str);
 
       DECLARE_UTILITY_PUBLIC(HelloWorld)
    };

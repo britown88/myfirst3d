@@ -78,7 +78,10 @@
     <ClInclude Include="public\utility\Object.hpp" />
     <ClInclude Include="public\utility\Geom.hpp" />
     <ClInclude Include="public\utility\ObjectHash.h" />
+    <ClInclude Include="public\utility\RTTI.h" />
+    <ClInclude Include="public\utility\SExpressions.hpp" />
     <ClInclude Include="public\utility\Singleton.hpp" />
+    <ClInclude Include="public\utility\String.hpp" />
     <ClInclude Include="public\utility\StringView.hpp" />
     <ClInclude Include="public\utility\Vector.hpp" />
   </ItemGroup>
@@ -87,6 +90,8 @@
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="SExpressions.cpp" />
+    <ClCompile Include="String.cpp" />
     <ClCompile Include="StringView.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
