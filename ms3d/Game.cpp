@@ -54,6 +54,21 @@ namespace app {
          utl::String str1("lol");
          utl::String str2;
 
+         class foo {
+            int i;
+         public:
+            ~foo() {
+               i = 5;
+            }
+         };
+
+         foo bar;
+
+         auto exp = new utl::SExpr(bar);
+         auto barptr = exp->getObj<foo>();
+         delete exp;
+
+
          utl::SExpr modelexp(m_model);
          utl::SExpr intexp(1);
          utl::SExpr floatexp(2.0f);
@@ -63,14 +78,10 @@ namespace app {
 
          auto i = intexp.getInt();
          auto m = modelexp.getObj<gfx::Model*>();
-
-         
-
          auto f = floatexp.getFloat();
          auto str = stringexp.getStr();
          auto s = symbexp.getSymb();
          auto l = listexp.getList();
-
 
 
       }

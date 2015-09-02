@@ -1,52 +1,53 @@
 #include "utility/SExpressions.hpp"
+#include "utility/Defs.hpp"
 
 namespace utl {
    class SExprPrivate : public ObjectPrivate {
       enum Type{ Nil, Int, Float, List, Literal, Symb, Obj };
       Type m_type;
-
-      int m_int;
-      float m_float;
-      Sublist m_list;
-      String m_string;
-      StringView m_symbol;
-      void *m_obj;
-
-      IRTTI *m_objRtti;
+      byte m_data[sizeof(Vector<SExpr>)];
    public:
       SExprPrivate():m_type(Nil) {}
-      SExprPrivate(int i) :m_type(Int), m_int(i) {}
-      SExprPrivate(float f) :m_type(Float), m_float(f) {}
-      SExprPrivate(Sublist &list) :m_type(List), m_list(list) {}
-      SExprPrivate(String &str) :m_type(Literal), m_string(str) {}
-      SExprPrivate(Symbol symb) :m_type(Symb), m_symbol(symb) {}
-      SExprPrivate(void *data, IRTTI *rtti) :m_type(Obj), m_obj(data), m_objRtti(rtti){}
+      SExprPrivate(int i) :m_type(Int) { new(m_data) int(i); }
+      SExprPrivate(float f) :m_type(Float) { new(m_data) float(f);}
+      SExprPrivate(Sublist &list) :m_type(List) { new(m_data) Sublist(list);}
+      SExprPrivate(String &str) :m_type(Literal) { new(m_data) String(str);}
+      SExprPrivate(Symbol symb) :m_type(Symb) { new(m_data) Symbol(symb);}
+      SExprPrivate(void *data, IRTTI *rtti) :m_type(Obj) { 
+         memcpy(m_data, &data, sizeof(void*)); 
+         memcpy(m_data + sizeof(void*), &rtti, sizeof(void*));
+      }
 
       SExprPrivate(SExprPrivate const &rhs):m_type(rhs.m_type) { 
-         switch (m_type) {
-         case Int: m_int = rhs.m_int; break;
-         case Float: m_float = rhs.m_float; break;
-         case List: m_list = rhs.m_list; break;
-         case Literal: m_string = rhs.m_string; break;
-         case Symb: m_symbol = rhs.m_symbol; break;
-         case Obj: m_int = rhs.m_int; m_objRtti = rhs.m_objRtti; break;
-         }
+         memcpy(m_data, rhs.m_data, sizeof(m_data));
       }
 
       ~SExprPrivate() {
          if (m_type == Obj) {
-            m_objRtti->destroy(m_obj);
+            getRTTI()->destroy(getObject());
          }
       }
 
-      int *getInt() { return m_type == Int ? &m_int : nullptr; }
-      float *getFloat() { return m_type == Float ? &m_float : nullptr; }
-      Sublist *getList() { return m_type == List ? &m_list : nullptr; }
-      String *getStr() { return m_type == Literal ? &m_string : nullptr; }
-      Symbol *getSymb() { return m_type == Symb ? &m_symbol : nullptr; }
+      IRTTI *getRTTI() { return *(IRTTI**)(m_data + sizeof(void*)); }
+      void *getObject() { return *(void**)m_data; }
+
+      template<typename T>
+      T *conditionReturn(Type t) {
+         return m_type == t ? (T*)m_data : nullptr;
+      }
+
+      int *getInt() { return conditionReturn<int>(Int); }
+      float *getFloat() { return conditionReturn<float>(Float); }
+      Sublist *getList() { return conditionReturn<Sublist>(List); }
+      String *getStr() { return conditionReturn<String>(Literal); }
+      Symbol *getSymb() { return conditionReturn<Symbol>(Symb); }
 
       void *getObj(size_t rtti) { 
-         return m_type == Obj && rtti == m_objRtti->getid() ? m_obj : nullptr;
+         if (m_type == Obj && rtti == getRTTI()->getid()) {
+            return getObject();
+         }
+
+         return nullptr;
       }
 
       //returns if expr should be evaluated
