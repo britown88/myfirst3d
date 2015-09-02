@@ -10,6 +10,9 @@ namespace utl {
    public:
       virtual size_t getid() = 0;
       virtual void destroy(void *self) = 0;
+      virtual void move(void *lhs, void *rhs) = 0;
+      virtual void copy(void *lhs, void *rhs) = 0;
+      virtual size_t size() const = 0;
    };
 
    template<typename T>
@@ -23,9 +26,19 @@ namespace utl {
       size_t getid() {
          return id();
       }
+
+      size_t size() const { return sizeof(T); }
       
       void destroy(void *self) {
-         delete (T*)self;
+         ((T*)self)->~T();
+      }
+
+      void move(void *lhs, void *rhs) {
+         new(lhs) T(std::move(*(T*)rhs));
+      }
+
+      void copy(void *lhs, void *rhs) {
+         new(lhs) T(*(T*)rhs);
       }
    };
 

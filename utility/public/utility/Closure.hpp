@@ -64,7 +64,9 @@ namespace utl {
       Closure(Type && other) :
          m_buffer(std::move(other.m_buffer)),
          m_execute(other.m_execute),
-         m_destroy(other.m_destroy) {}
+         m_destroy(other.m_destroy) {
+         other.m_destroy = nullptr;
+      }
 
       Type &operator=(Type && other) {
          if (this == &other) {

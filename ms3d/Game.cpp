@@ -9,6 +9,7 @@
 #include "utility/String.hpp"
 
 #include <assert.h>
+#include "utility/Closure.hpp"
 
 namespace app {
    class Game::Impl {
@@ -54,9 +55,15 @@ namespace app {
          utl::String str1("lol");
          utl::String str2;
 
+         auto asdjak = utl::SExpr(std::move(str1));
+
+         utl::Sublist ajskdljakl;
+         auto asdjasdaak = utl::SExpr(std::move(ajskdljakl));
+
          class foo {
             int i;
          public:
+            foo() { i = 10; }
             ~foo() {
                i = 5;
             }
@@ -76,12 +83,46 @@ namespace app {
          utl::SExpr symbexp(utl::internString("hellohello"));
          utl::SExpr listexp(utl::Sublist{});
 
+         
          auto i = intexp.getInt();
          auto m = modelexp.getObj<gfx::Model*>();
          auto f = floatexp.getFloat();
          auto str = stringexp.getStr();
          auto s = symbexp.getSymb();
          auto l = listexp.getList();
+
+
+         typedef utl::Closure<utl::SExpr(utl::SExpr &)> EvalFunc;
+
+         EvalFunc myclosure([=](utl::SExpr &in) ->utl::SExpr {
+            if (auto i = in.getInt()) {
+               return utl::SExpr(*i + 5);
+            }
+            return utl::SExpr();
+         });
+
+         auto ptr = std::make_shared<EvalFunc>(std::move(myclosure));
+         auto ptr2 = std::move(ptr);
+
+         utl::SExpr *cexpptr = new utl::SExpr(std::move(ptr2));
+
+         auto ptrptr = ptr2.get();
+
+         utl::SExpr cexp = *cexpptr;
+         delete cexpptr;
+
+
+         utl::SExpr integer(1);
+
+         auto func = cexp.getObj<std::shared_ptr<EvalFunc>>();
+         if (func) {
+            auto result = (**func)(integer);
+            if (auto resulti = result.getInt()) {
+               auto thisShouldBeA6 = *resulti;
+               int asd = 6;
+               asd += 6;
+            }
+         }
 
 
       }

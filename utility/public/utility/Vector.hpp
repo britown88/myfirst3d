@@ -66,14 +66,14 @@ namespace utl {
          return *this;
       }
 
-      Vector(Vector<T> const &&other) {
+      Vector(Vector<T> &&other) {
          for (auto &&o : other) {
             push_back(std::move(o));
          }
          other.clear();
       }
 
-      Vector<T> &operator=(Vector<T> const &&other) {
+      Vector<T> &operator=(Vector<T> &&other) {
          if (this == &other) {
             return *this;
          }
