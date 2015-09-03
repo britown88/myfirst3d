@@ -1,10 +1,13 @@
-#include "utility/SExpressions.hpp"
+#include "utility/LispExpressions.hpp"
 #include "utility/Defs.hpp"
 
-namespace utl {
-   class SExprPrivate : public ObjectPrivate {
+using namespace utl;
+
+namespace lisp {
+   class ExprPrivate : public ObjectPrivate {
       static const unsigned int PtrSize = sizeof(void*);
-      byte m_data[PtrSize * 2];
+      TypeID m_rtti;
+      byte m_data[PtrSize];
       bool m_eval;
 
       void _moveObjectFrom(void *data, TypeID rtti) {
@@ -22,7 +25,7 @@ namespace utl {
             rtti->move(m_data, data);
          }
 
-         memcpy(m_data + PtrSize, &rtti, PtrSize);
+         m_rtti = rtti;
       }
 
       void _copyObjectFrom(void *data, TypeID rtti) {
@@ -40,10 +43,10 @@ namespace utl {
             rtti->copy(m_data, data);
          }
 
-         memcpy(m_data + PtrSize, &rtti, PtrSize);
+         m_rtti = rtti;
       }
 
-      void _copyFrom(SExprPrivate const &rhs) {
+      void _copyFrom(ExprPrivate const &rhs) {
          if (auto rtti = rhs.getRTTI()) {
             _copyObjectFrom((void*)rhs.getObject(), rtti);
          }
@@ -61,6 +64,7 @@ namespace utl {
 
       void _clear() {
          memset((byte*)m_data, 0, sizeof(m_data));
+         m_rtti = nullptr;
       }
 
       void _destroy() {
@@ -68,37 +72,35 @@ namespace utl {
           _clear();
       }
 
-      TypeID getRTTI() const { return *(TypeID*)(m_data + PtrSize); }
+      TypeID getRTTI() const { return m_rtti; }
       void *getObject() const { return getRTTI()->size() > PtrSize ? *(void**)m_data : (void*)m_data; }
 
    public:
-      SExprPrivate() : m_eval(true) { _clear(); }
-      SExprPrivate(void *data, TypeID rtti) :m_eval(true) {
+      ExprPrivate() : m_eval(true) { _clear(); }
+      ExprPrivate(void *data, TypeID rtti) :m_eval(true) {
          _clear();
          _copyObjectFrom(data, rtti);
       }
 
-      SExprPrivate(void *data, TypeID rtti, int move) :m_eval(true) {
+      ExprPrivate(void *data, TypeID rtti, int move) :m_eval(true) {
          _clear();
          _moveObjectFrom(data, rtti);
       }
 
-      SExprPrivate(SExprPrivate const &rhs): m_eval(rhs.m_eval){
+      ExprPrivate(ExprPrivate const &rhs): m_eval(rhs.m_eval){
          _clear();
          _copyFrom(rhs);
       }
 
-      SExprPrivate &operator=(SExprPrivate const &rhs) {
+      ExprPrivate &operator=(ExprPrivate const &rhs) {
          _destroy();
-
          m_eval = rhs.m_eval;
-
          _copyFrom(rhs);
 
          return *this;
       }
 
-      ~SExprPrivate() {
+      ~ExprPrivate() {
          _destroy();
       }
 
@@ -109,40 +111,40 @@ namespace utl {
 
       int *getInt() { return conditionReturn<int>(); }
       float *getFloat() { return conditionReturn<float>(); }
-      Sublist *getList() { return conditionReturn<Sublist>(); }
-      String *getStr() { return conditionReturn<String>(); }
-      Symbol *getSymb() { return conditionReturn<Symbol>(); }
+      List *getList() { return conditionReturn<List>(); }
+      Str *getStr() { return conditionReturn<Str>(); }
+      Sym *getSymb() { return conditionReturn<Sym>(); }
 
       void *getObj(TypeID rtti) { return rtti == getRTTI() ? getObject() : nullptr; }
 
       //returns if expr should be evaluated
       bool &eval() { return m_eval; }
 
-      //returns false if sexpr is nil
+      //returns false if Expr is nil
       explicit operator bool() { return getRTTI() != nullptr; }
 
-      DECLARE_UTILITY_PRIVATE(SExpr)
+      DECLARE_UTILITY_PRIVATE(Expr)
    };
 
-   SExpr::SExpr(void *data, TypeID rtti) :Object(new SExprPrivate(data, rtti)) {}
-   SExpr::SExpr(void *data, TypeID rtti, int move) : Object(new SExprPrivate(data, rtti, move)) {}
-   void *SExpr::_getObjImpl(TypeID rtti) { return self()->getObj(rtti); }
+   Expr::Expr(void *data, TypeID rtti) :Object(new ExprPrivate(data, rtti)) {}
+   Expr::Expr(void *data, TypeID rtti, int move) : Object(new ExprPrivate(data, rtti, move)) {}
+   void *Expr::_getObjImpl(TypeID rtti) { return self()->getObj(rtti); }
 
-   SExpr::SExpr() : Object(new SExprPrivate()) {}
+   Expr::Expr() : Object(new ExprPrivate()) {}
 
-   SExpr::SExpr(SExpr const &rhs): Object(new SExprPrivate(*rhs.self())) {}
-   SExpr &SExpr::operator=(SExpr const &rhs) {
+   Expr::Expr(Expr const &rhs): Object(new ExprPrivate(*rhs.self())) {}
+   Expr &Expr::operator=(Expr const &rhs) {
       *self() = *rhs.self();
       return *this;
    }
 
-   int *SExpr::getInt() { return self()->getInt(); }
-   float *SExpr::getFloat() { return self()->getFloat(); }
-   Sublist *SExpr::getList() { return self()->getList(); }
-   String *SExpr::getStr() { return self()->getStr(); }
-   Symbol *SExpr::getSymb() { return self()->getSymb(); }
+   int *Expr::i32() { return self()->getInt(); }
+   float *Expr::f32() { return self()->getFloat(); }
+   List *Expr::list() { return self()->getList(); }
+   Str *Expr::str() { return self()->getStr(); }
+   Sym *Expr::sym() { return self()->getSymb(); }
 
-   bool &SExpr::eval() { return self()->eval(); }
+   bool &Expr::eval() { return self()->eval(); }
 
-   SExpr::operator bool() { return (bool)*self(); }
+   Expr::operator bool() { return (bool)*self(); }
 }

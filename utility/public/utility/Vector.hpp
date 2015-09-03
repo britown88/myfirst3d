@@ -43,6 +43,11 @@ namespace utl {
    public:
       Vector() :m_size(0), m_capacity(0) {
       }
+      Vector(size_t size) :m_size(0), m_capacity(0) {         
+         while (size--) {
+            push_back(T{});
+         }
+      }
       Vector(MemoryBuffer && buffer)
          :m_buffer(std::move(buffer)) {
          m_size = m_buffer.getSize() / sizeof(T);
@@ -87,6 +92,12 @@ namespace utl {
          m_size = other.m_size;
          m_buffer = std::move(other.getBuffer());
          return *this;
+      }
+
+      T &operator[](size_t i) {
+         if (i >= size()) { return *(T*)0; }
+
+         return *(begin() + i);
       }
 
       T const *begin() const {

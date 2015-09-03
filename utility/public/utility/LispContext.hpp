@@ -1,24 +1,24 @@
 #pragma once
 
 #include "Object.hpp"
-#include "SExpressions.hpp"
+#include "LispExpressions.hpp"
 
-namespace utl {
-   class LispContextPrivate;
-   class UTILITY_API LispContext : public Object {
+namespace lisp {
+   class ContextPrivate;
+   class UTILITY_API Context : public utl::Object {
    public:
-      LispContext();
+      Context();
 
       void push();
       void pop();
 
-      void store(Symbol key, SExpr &value);
-      void store(Symbol key, SExpr &&value);
+      void store(Sym key, Expr &value);
+      void store(Sym key, Expr &&value);
 
-      SExpr &load(Symbol key);
+      Expr &load(Sym key);
 
-      DECLARE_UTILITY_PUBLIC(LispContext)
+      DECLARE_UTILITY_PUBLIC(Context)
    };
 
-   typedef Closure<SExpr(SExpr &, LispContext &)> Evaluator;
+   typedef utl::Closure<Expr(Expr &, Context &)> Evaluator;
 }

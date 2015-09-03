@@ -154,7 +154,7 @@ namespace gfx {
 
          auto found = m_uniforms.find(name);
          if (found == m_uniforms.end()) {
-            Uniform u = glGetUniformLocation(m_handle, name);
+            Uniform u = glGetUniformLocation(m_handle, (const char*)name);
             m_uniforms.insert(std::make_pair(name, u));
             return u;
          }

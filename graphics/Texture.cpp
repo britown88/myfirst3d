@@ -175,7 +175,7 @@ namespace gfx {
          if (!m_request.path)
             return;
 
-         m_buffer = std::move(loadPng(m_request.path));
+         m_buffer = std::move(loadPng((const char*)m_request.path));
 
          glEnable(GL_TEXTURE_2D);
          glGenTextures(1, &m_glHandle);

@@ -5,12 +5,13 @@
 #include "utility/StringView.hpp"
 #include "utility/Matrix.hpp"
 #include "utility/Color.hpp"
-#include "utility/SExpressions.hpp"
+#include "utility/LispExpressions.hpp"
 #include "utility/String.hpp"
 
 #include <assert.h>
 #include "utility/Closure.hpp"
 #include "utility/LispContext.hpp"
+
 
 namespace app {
    class Game::Impl {
@@ -35,10 +36,35 @@ namespace app {
             indices.size());
       }
 
+      void _testxpressions2() {
+         lisp::List list(4);
+         list[0] = 5;
+         list[1] = lisp::Str("wtf");
+         list[2] = utl::internString("does this work?");
+         list[3] = "wtfwtf";
+
+         lisp::Expr listCopy(list);
+         for (auto&& val : *listCopy.list())
+         {
+            if (auto i = val.i32())
+            {
+               printf("int: %d\n", *i);
+            }
+            else if (auto s = val.sym())
+            {
+               printf("sym: %s\n", (const char *)*s);
+            }
+            else if (auto st = val.str())
+            {
+               printf("str: %s\n", st->c_str());
+            }
+         }
+      }
+
 
       void _testxpressions() {
-         utl::Sublist list1;
-         list1.push_back(utl::SExpr(45));
+         lisp::List list1;
+         list1.push_back(lisp::Expr(45));
 
          class foo {
             int i[100];
@@ -51,21 +77,21 @@ namespace app {
 
          foo bar;
 
-         utl::SExpr sexnil();
-         utl::SExpr sexi(1);
-         utl::SExpr sexf(2.0f);
-         utl::SExpr sexstr(utl::String("lol"));
-         utl::SExpr sexsymb(utl::internString("lolol"));
-         utl::SExpr sexlist(std::move(list1));
-         utl::SExpr sexfoo(bar);
+         lisp::Expr sexnil;
+         lisp::Expr sexi(1);
+         lisp::Expr sexf(2.0f);
+         lisp::Expr sexstr(utl::String("lol"));
+         lisp::Expr sexsymb(utl::internString("lolol"));
+         lisp::Expr sexlist(std::move(list1));
+         lisp::Expr sexfoo(bar);
 
 
-         auto i = *sexi.getInt();
-         auto f = *sexf.getFloat();
-         auto str = *sexstr.getStr();
-         auto symb = *sexsymb.getSymb();
-         auto list = *sexlist.getList();
-         auto bar2 = *sexfoo.getObj<foo>();
+         auto i = *sexi.i32();
+         auto f = *sexf.f32();
+         auto str = *sexstr.str();
+         auto symb = *sexsymb.sym();
+         auto list = *sexlist.list();
+         auto bar2 = *sexfoo.obj<foo>();
 
 
          int j = i;
@@ -90,17 +116,18 @@ namespace app {
          m_texture = r.getTextureManager().get(request);
 
          _testxpressions();
+         _testxpressions2();
 
-         utl::LispContext context;
+         lisp::Context context;
 
          auto evalName = utl::internString("thisIsATest");
-         auto eval = std::make_shared<utl::Evaluator>([=](utl::SExpr &sxp, utl::LispContext &context) {return utl::SExpr();});
+         auto eval = std::make_shared<lisp::Evaluator>([=](lisp::Expr &sxp, lisp::Context &context) {return lisp::Expr();});
 
          context.store(evalName, eval);
 
          if (auto evalExpr = context.load(evalName)) {
-            if (auto e = evalExpr.getObj<std::shared_ptr<utl::Evaluator>>()) {
-               auto out = (**e)(utl::SExpr(), context);
+            if (auto e = evalExpr.obj<std::shared_ptr<lisp::Evaluator>>()) {
+               auto out = (**e)(lisp::Expr(), context);
             }
          }
 
@@ -113,14 +140,14 @@ namespace app {
             int j = 5;
          }
 
-         utl::Sublist list1;
-         list1.push_back(utl::SExpr(45));
+         lisp::List list1;
+         list1.push_back(lisp::Expr(45));
          {
-            utl::Sublist list2(std::move(list1));
-            list2.push_back(utl::SExpr(186));
+            lisp::List list2(std::move(list1));
+            list2.push_back(lisp::Expr(186));
 
             for (auto && item : list2) {
-               if (auto i = item.getInt()) {
+               if (auto i = item.i32()) {
                   int blah = *i;
                   int blahbla = 5;
                }
@@ -132,7 +159,7 @@ namespace app {
             list1 = std::move(list3);
          }
          for (auto && item : list1) {
-            if (auto i = item.getInt()) {
+            if (auto i = item.i32()) {
                int blah = *i;
                int blahbla = 5;
             }

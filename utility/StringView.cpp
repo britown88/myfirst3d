@@ -6,24 +6,9 @@
 #include <string.h>
 
 namespace utl {
-   struct StringHash {
-      size_t operator()(StringView str) const {
-         size_t out = 5381;
-         while (*str)
-            out = (out << 5) + (out << 1) + (*str++);
-
-         return out;
-      }
-   };
-
-   struct StringComp {
-      bool operator()(StringView lhs, StringView rhs) const {
-         return strcmp(lhs, rhs) == 0;
-      }
-   };
 
    class StringTable {
-      std::unordered_set<StringView, StringHash, StringComp> m_table;
+      std::unordered_set<StringView> m_table;
    public:
       ~StringTable() {
          //destruction should be at porogram termination but let's class this joint up
@@ -32,8 +17,8 @@ namespace utl {
          }
       }
 
-      StringView get(StringView str) {
-         auto found = m_table.find(str);
+      StringView get(const char* str) {
+         auto found = m_table.find((StringView)str);
          if (found == m_table.end()) {
             auto len = strlen(str) + 1;
             StringView viewStorage = (StringView)malloc(len);
@@ -45,12 +30,12 @@ namespace utl {
       }
    };
 
-   StringView internString(StringView str) {
+   StringView internString(const char* str) {
       return Singleton<StringTable>::Instance().get(str);
    }
 
    size_t stringViewHash(StringView str) {
-      static std::hash<const void*> hashFunc;
-      return hashFunc(str);
+      static std::hash<void*> hashFunc;
+      return hashFunc((void*)str);
    }
 }

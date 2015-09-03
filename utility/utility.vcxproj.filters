@@ -60,13 +60,16 @@
     <ClInclude Include="public\utility\String.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
-    <ClInclude Include="public\utility\SExpressions.hpp">
-      <Filter>Header Files\public</Filter>
-    </ClInclude>
     <ClInclude Include="public\utility\RTTI.h">
       <Filter>Header Files\public</Filter>
     </ClInclude>
     <ClInclude Include="public\utility\LispContext.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\utility\LispParser.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\utility\LispExpressions.hpp">
       <Filter>Header Files\public</Filter>
     </ClInclude>
   </ItemGroup>
@@ -89,10 +92,10 @@
     <ClCompile Include="String.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SExpressions.cpp">
+    <ClCompile Include="LispContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LispContext.cpp">
+    <ClCompile Include="LispExpressions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

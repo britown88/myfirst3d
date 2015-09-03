@@ -78,13 +78,14 @@
     <ClInclude Include="public\utility\DLL_API.hpp" />
     <ClInclude Include="public\utility\HelloWorld.hpp" />
     <ClInclude Include="public\utility\LispContext.hpp" />
+    <ClInclude Include="public\utility\LispExpressions.hpp" />
+    <ClInclude Include="public\utility\LispParser.hpp" />
     <ClInclude Include="public\utility\Matrix.hpp" />
     <ClInclude Include="public\utility\MemoryBuffer.hpp" />
     <ClInclude Include="public\utility\Object.hpp" />
     <ClInclude Include="public\utility\Geom.hpp" />
     <ClInclude Include="public\utility\ObjectHash.h" />
     <ClInclude Include="public\utility\RTTI.h" />
-    <ClInclude Include="public\utility\SExpressions.hpp" />
     <ClInclude Include="public\utility\Singleton.hpp" />
     <ClInclude Include="public\utility\String.hpp" />
     <ClInclude Include="public\utility\StringView.hpp" />
@@ -93,10 +94,10 @@
   <ItemGroup>
     <ClCompile Include="HelloWorld.cpp" />
     <ClCompile Include="LispContext.cpp" />
+    <ClCompile Include="LispExpressions.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="SExpressions.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="StringView.cpp" />
   </ItemGroup>
