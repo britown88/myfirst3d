@@ -9,6 +9,10 @@ namespace utl {
       size_t m_size, m_capacity;
 
       void grow() {
+         if (!m_buffer) {
+            m_buffer = std::move(MemoryBuffer{});
+         }
+
          //vector was empty
          if (!m_capacity) {
             m_capacity = 8;
@@ -66,11 +70,10 @@ namespace utl {
          return *this;
       }
 
-      Vector(Vector<T> &&other) {
-         for (auto &&o : other) {
-            push_back(std::move(o));
-         }
-         other.clear();
+      Vector(Vector<T> &&other){
+         m_capacity = other.m_capacity;
+         m_size = other.m_size;
+         m_buffer = std::move(other.getBuffer());
       }
 
       Vector<T> &operator=(Vector<T> &&other) {
@@ -78,11 +81,10 @@ namespace utl {
             return *this;
          }
 
-         clear();
-         for (auto &&o : other) {
-            push_back(std::move(o));
-         }
-         other.clear();
+         clear();         
+         m_capacity = other.m_capacity;
+         m_size = other.m_size;
+         m_buffer = std::move(other.getBuffer());
          return *this;
       }
 
@@ -124,22 +126,22 @@ namespace utl {
             grow();
          }
 
-         //construct obj at the correct place in our buffer
+         //construct obj at the correct place in our buffer         
          new(begin() + (m_size++)) T(std::move(obj));
          m_buffer.setSize(m_size * sizeof(T));
+         
       }
 
       void clear() {
-         while (m_size > 0) {
-            begin()[--m_size].~T();
-         }            
-
-
          if (m_buffer) {
+            while (m_size > 0) {
+               begin()[--m_size].~T();
+            }
+
             m_buffer.clear();
          }
          
-         m_capacity = 0;
+         m_size = m_capacity = 0;
       }
 
       size_t size() const {

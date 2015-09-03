@@ -44,7 +44,7 @@ namespace utl {
       }
 
       void *getData() const{
-         if (size < sizeof(sbo)) {
+         if (capacity <= sizeof(sbo)) {
             return (void*)sbo;
          }
          else {
@@ -82,7 +82,7 @@ namespace utl {
    }
 
    MemoryBuffer::operator bool() {
-      return pImpl && self()->size > 0;
+      return pImpl != nullptr;
    }
 }
 

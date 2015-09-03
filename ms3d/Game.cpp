@@ -65,6 +65,42 @@ namespace app {
                auto out = (**e)(utl::SExpr(), context);
             }
          }
+
+         utl::Vector<int> foo;
+         foo.push_back(1);
+         foo.push_back(2);
+
+         for (auto &&f : foo) {
+            int i = f;
+            int j = 5;
+         }
+
+         utl::Sublist list1;
+         list1.push_back(utl::SExpr(45));
+         {
+            utl::Sublist list2(std::move(list1));
+            list2.push_back(utl::SExpr(186));
+
+            for (auto && item : list2) {
+               if (auto i = item.getInt()) {
+                  int blah = *i;
+                  int blahbla = 5;
+               }
+
+            }
+
+            list1 = list2;
+            auto list3 = std::move(list1);
+            list1 = std::move(list3);
+         }
+         for (auto && item : list1) {
+            if (auto i = item.getInt()) {
+               int blah = *i;
+               int blahbla = 5;
+            }
+
+         }
+
          
 
       }
