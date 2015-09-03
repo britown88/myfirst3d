@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include "utility/Closure.hpp"
+#include "utility/LispContext.hpp"
 
 namespace app {
    class Game::Impl {
@@ -52,78 +53,19 @@ namespace app {
 
          m_texture = r.getTextureManager().get(request);
 
-         utl::String str1("lol");
-         utl::String str2;
+         utl::LispContext context;
 
-         auto asdjak = utl::SExpr(std::move(str1));
+         auto evalName = utl::internString("thisIsATest");
+         auto eval = std::make_shared<utl::Evaluator>([=](utl::SExpr &sxp, utl::LispContext &context) {return utl::SExpr();});
 
-         utl::Sublist ajskdljakl;
-         auto asdjasdaak = utl::SExpr(std::move(ajskdljakl));
+         context.store(evalName, eval);
 
-         class foo {
-            int i;
-         public:
-            foo() { i = 10; }
-            ~foo() {
-               i = 5;
-            }
-         };
-
-         foo bar;
-
-         auto exp = new utl::SExpr(bar);
-         auto barptr = exp->getObj<foo>();
-         delete exp;
-
-
-         utl::SExpr modelexp(m_model);
-         utl::SExpr intexp(1);
-         utl::SExpr floatexp(2.0f);
-         utl::SExpr stringexp(utl::String("hello"));
-         utl::SExpr symbexp(utl::internString("hellohello"));
-         utl::SExpr listexp(utl::Sublist{});
-
-         
-         auto i = intexp.getInt();
-         auto m = modelexp.getObj<gfx::Model*>();
-         auto f = floatexp.getFloat();
-         auto str = stringexp.getStr();
-         auto s = symbexp.getSymb();
-         auto l = listexp.getList();
-
-
-         typedef utl::Closure<utl::SExpr(utl::SExpr &)> EvalFunc;
-
-         EvalFunc myclosure([=](utl::SExpr &in) ->utl::SExpr {
-            if (auto i = in.getInt()) {
-               return utl::SExpr(*i + 5);
-            }
-            return utl::SExpr();
-         });
-
-         auto ptr = std::make_shared<EvalFunc>(std::move(myclosure));
-         auto ptr2 = std::move(ptr);
-
-         utl::SExpr *cexpptr = new utl::SExpr(std::move(ptr2));
-
-         auto ptrptr = ptr2.get();
-
-         utl::SExpr cexp = *cexpptr;
-         delete cexpptr;
-
-
-         utl::SExpr integer(1);
-
-         auto func = cexp.getObj<std::shared_ptr<EvalFunc>>();
-         if (func) {
-            auto result = (**func)(integer);
-            if (auto resulti = result.getInt()) {
-               auto thisShouldBeA6 = *resulti;
-               int asd = 6;
-               asd += 6;
+         if (auto evalExpr = context.load(evalName)) {
+            if (auto e = evalExpr.getObj<std::shared_ptr<utl::Evaluator>>()) {
+               auto out = (**e)(utl::SExpr(), context);
             }
          }
-
+         
 
       }
       

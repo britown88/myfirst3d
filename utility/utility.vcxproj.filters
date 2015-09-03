@@ -66,6 +66,9 @@
     <ClInclude Include="public\utility\RTTI.h">
       <Filter>Header Files\public</Filter>
     </ClInclude>
+    <ClInclude Include="public\utility\LispContext.hpp">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SExpressions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LispContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

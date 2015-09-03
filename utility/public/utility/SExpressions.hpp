@@ -10,11 +10,9 @@
 
 namespace utl {
    class SExpr;
-   class LispContext;
 
    typedef Vector<SExpr> Sublist;
    typedef StringView Symbol;
-   typedef Closure<SExpr(SExpr &, LispContext &)> Evaluator;
 
    class SExprPrivate;
 
@@ -61,19 +59,5 @@ namespace utl {
       DECLARE_UTILITY_PUBLIC(SExpr)
    };
 
-   class LispContextPrivate;
-   class UTILITY_API LispContext : public Object {
-      //std::vector<unordered_map<Symbol, sexpr>>>
-   public:
-      LispContext();
-
-      void push();
-      void pop();
-
-      void store();
-
-      DECLARE_UTILITY_PUBLIC(LispContext)
-   };
-
-   UTILITY_API Sublist parseFile();
+   UTILITY_API Sublist parseFile(const char *path);
 }
