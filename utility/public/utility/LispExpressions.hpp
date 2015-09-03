@@ -15,6 +15,8 @@ namespace lisp {
    typedef utl::StringView Sym;
    typedef utl::String Str;
 
+   UTILITY_API Sym internSym(const char *str);
+
    class ExprPrivate;
 
    class UTILITY_API Expr : public utl::Object{

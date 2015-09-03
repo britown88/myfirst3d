@@ -90,6 +90,7 @@
     <ClInclude Include="public\utility\String.hpp" />
     <ClInclude Include="public\utility\StringView.hpp" />
     <ClInclude Include="public\utility\Vector.hpp" />
+    <ClInclude Include="StringTable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloWorld.cpp" />

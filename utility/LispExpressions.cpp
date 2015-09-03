@@ -1,5 +1,6 @@
 #include "utility/LispExpressions.hpp"
 #include "utility/Defs.hpp"
+#include "StringTable.hpp"
 
 using namespace utl;
 
@@ -147,4 +148,9 @@ namespace lisp {
    bool &Expr::eval() { return self()->eval(); }
 
    Expr::operator bool() { return (bool)*self(); }
+
+   Sym internSym(const char *str) {
+      static StringTable symTable;
+      return symTable.get(str);
+   }
 }

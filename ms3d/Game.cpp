@@ -40,7 +40,7 @@ namespace app {
          lisp::List list(4);
          list[0] = 5;
          list[1] = lisp::Str("wtf");
-         list[2] = utl::internString("does this work?");
+         list[2] = lisp::internSym("does this work?");
          list[3] = "wtfwtf";
 
          lisp::Expr listCopy(list);
@@ -80,8 +80,8 @@ namespace app {
          lisp::Expr sexnil;
          lisp::Expr sexi(1);
          lisp::Expr sexf(2.0f);
-         lisp::Expr sexstr(utl::String("lol"));
-         lisp::Expr sexsymb(utl::internString("lolol"));
+         lisp::Expr sexstr("lol");
+         lisp::Expr sexsymb(lisp::internSym("lolol"));
          lisp::Expr sexlist(std::move(list1));
          lisp::Expr sexfoo(bar);
 
@@ -107,7 +107,7 @@ namespace app {
 
       void start() {
          auto test1 = utl::internString("test");
-         auto test2 = utl::internString("test");
+         auto test2 = lisp::internSym("test");
 
 
          auto &r = m_renderer;
@@ -124,18 +124,16 @@ namespace app {
 
          lisp::Context context;
 
-         auto evalName = utl::internString("thisIsATest");
-         auto eval = std::make_shared<lisp::Evaluator>([=](lisp::Expr &sxp, lisp::Context &context) {return lisp::Expr();});
+         auto evalName = lisp::internSym("thisIsATest");
+         auto eval = lisp::createEvaluator([=](lisp::Expr &sxp, lisp::Context &context) {return lisp::Expr();});
 
          context.store(evalName, eval);
 
          if (auto evalExpr = context.load(evalName)) {
-            if (auto e = evalExpr.obj<std::shared_ptr<lisp::Evaluator>>()) {
-               auto out = (**e)(lisp::Expr(), context);
-            }
+            auto out = lisp::evaluate(evalExpr, lisp::Expr(), context);
          }
 
-         lisp::List heterogeneousListsLmao = { lisp::List{1, 2, 3, 4.5f}, 4, 6.5f, "fuuuuck you", utl::internString("ID"), std::make_shared<std::vector<std::string>>() };
+         lisp::List heterogeneousListsLmao = { lisp::List{1, 2, 3, 4.5f}, 4, 6.5f, "fuuuuck you", lisp::internSym("ID"), std::make_shared<std::vector<std::string>>() };
 
          utl::Vector<int> foo;
          foo.push_back(1);

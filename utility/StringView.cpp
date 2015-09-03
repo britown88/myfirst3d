@@ -1,14 +1,16 @@
 #include "utility/StringView.hpp"
 #include "utility/Singleton.hpp"
 
+#include "StringTable.hpp"
+
 #include <unordered_set>
 #include <string>
 #include <string.h>
 
 namespace utl {
 
-   struct StringHash {
-      size_t operator()(StringView view) const {
+
+      size_t StringHash::operator()(StringView view) const {
          size_t out = 5381;
          const char *str = (const char *)view;
          while (*str)
@@ -16,25 +18,21 @@ namespace utl {
 
          return out;
       }
-   };
 
-   struct StringComp {
-      bool operator()(StringView lhs, StringView rhs) const {
+
+
+      bool StringComp::operator()(StringView lhs, StringView rhs) const {
          return strcmp((const char *)lhs, (const char *)rhs) == 0;
       }
-   };
 
-   class StringTable {
-      std::unordered_set<StringView, StringHash, StringComp> m_table;
-   public:
-      ~StringTable() {
+      StringTable::~StringTable() {
          //destruction should be at porogram termination but let's class this joint up
          for (auto &&item : m_table) {
             free((void*)item);
          }
       }
 
-      StringView get(const char* str) {
+      StringView StringTable::get(const char* str) {
          auto found = m_table.find((StringView)str);
          if (found == m_table.end()) {
             auto len = strlen(str) + 1;
@@ -45,7 +43,6 @@ namespace utl {
 
          return *found;
       }
-   };
 
    StringView internString(const char* str) {
       return Singleton<StringTable>::Instance().get(str);
