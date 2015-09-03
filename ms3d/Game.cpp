@@ -106,6 +106,10 @@ namespace app {
       gfx::Texture *m_texture;
 
       void start() {
+         auto test1 = utl::internString("test");
+         auto test2 = utl::internString("test");
+
+
          auto &r = m_renderer;
 
          m_model = buildTestModel();

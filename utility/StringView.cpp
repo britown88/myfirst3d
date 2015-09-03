@@ -7,8 +7,25 @@
 
 namespace utl {
 
+   struct StringHash {
+      size_t operator()(StringView view) const {
+         size_t out = 5381;
+         const char *str = (const char *)view;
+         while (*str)
+            out = (out << 5) + (out << 1) + (*str++);
+
+         return out;
+      }
+   };
+
+   struct StringComp {
+      bool operator()(StringView lhs, StringView rhs) const {
+         return strcmp((const char *)lhs, (const char *)rhs) == 0;
+      }
+   };
+
    class StringTable {
-      std::unordered_set<StringView> m_table;
+      std::unordered_set<StringView, StringHash, StringComp> m_table;
    public:
       ~StringTable() {
          //destruction should be at porogram termination but let's class this joint up
