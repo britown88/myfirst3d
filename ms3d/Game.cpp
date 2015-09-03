@@ -131,6 +131,8 @@ namespace app {
             }
          }
 
+         lisp::List heterogeneousListsLmao = { lisp::List{1, 2, 3, 4.5f}, 4, 6.5f, "fuuuuck you", utl::internString("ID"), std::make_shared<std::vector<std::string>>() };
+
          utl::Vector<int> foo;
          foo.push_back(1);
          foo.push_back(2);

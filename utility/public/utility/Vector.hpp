@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MemoryBuffer.hpp"
+#include <initializer_list>
 
 namespace utl {
    template<typename T>
@@ -42,6 +43,11 @@ namespace utl {
 
    public:
       Vector() :m_size(0), m_capacity(0) {
+      }
+      Vector(std::initializer_list<T> l) :m_size(0), m_capacity(0) {
+         for (auto && item : l) {
+            push_back(item);
+         }
       }
       Vector(size_t size) :m_size(0), m_capacity(0) {         
          while (size--) {
