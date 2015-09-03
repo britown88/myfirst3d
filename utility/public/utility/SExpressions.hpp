@@ -17,29 +17,29 @@ namespace utl {
    class SExprPrivate;
 
    class UTILITY_API SExpr : public Object{
-      SExpr(void *data, IRTTI* rtti, int move);
-      SExpr(void *data, IRTTI* rtti);
-      void *_getObjImpl(size_t id);
+      SExpr(void *data, TypeID rtti, int move);
+      SExpr(void *data, TypeID rtti);
+      void *_getObjImpl(TypeID id);
    public:
       SExpr(SExpr const &rhs);
       SExpr(SExpr &rhs) :SExpr((SExpr const &)rhs) {}
       SExpr &operator=(SExpr const &rhs);
 
       template<typename T>
-      SExpr(T &obj) :SExpr(&obj, &Singleton<RTTI<T>>::Instance()) {}
+      SExpr(T &obj) :SExpr(&obj, GetTypeID<T>()) {}
 
       //we need to differentiate the move constructor over the copy SO PASS AN INT SHORE
       template<typename T>
-      SExpr(T &&obj) : SExpr(&obj, &Singleton<RTTI<T>>::Instance(), 0) {}
+      SExpr(T &&obj) : SExpr(&obj, GetTypeID<T>(), 0) {}
 
       SExpr();
-      SExpr(int i);
-      SExpr(float f);
-      SExpr(Sublist &list);
-      SExpr(Sublist &&list);
-      SExpr(String &str);
-      SExpr(String &&str);
-      SExpr(Symbol symb);
+      SExpr(int i) : SExpr(&i, GetTypeID<int>()) {}
+      SExpr(float f) : SExpr(&f, GetTypeID<float>()) {}
+      SExpr(Sublist &list) : SExpr(&list, GetTypeID<Sublist>()) {}
+      SExpr(Sublist &&list) : SExpr(&list, GetTypeID<Sublist>(), 0) {}
+      SExpr(String &str) : SExpr(&str, GetTypeID<String>()) {}
+      SExpr(String &&str) : SExpr(&str, GetTypeID<String>(), 0) {}
+      SExpr(Symbol symb) : SExpr(&symb, GetTypeID<Symbol>()) {}
 
       int *getInt();
       float *getFloat();
@@ -48,7 +48,7 @@ namespace utl {
       Symbol *getSymb();
 
       template<typename T>
-      T *getObj() { return (T*)_getObjImpl(RTTI<T>::id()); }
+      T *getObj() { return (T*)_getObjImpl(GetTypeID<T>()); }
 
       //returns if expr should be evaluated, defaults to true
       bool &eval();

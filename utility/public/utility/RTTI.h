@@ -4,11 +4,9 @@
 #include "Singleton.hpp"
 
 namespace utl {
-   static size_t __RTTI_COUNT = 0;
 
    class IRTTI {
    public:
-      virtual size_t getid() = 0;
       virtual void destroy(void *self) = 0;
       virtual void move(void *lhs, void *rhs) = 0;
       virtual void copy(void *lhs, void *rhs) = 0;
@@ -18,15 +16,6 @@ namespace utl {
    template<typename T>
    class RTTI : public IRTTI {
    public:
-      static size_t id() {
-         static size_t TYPEID = __RTTI_COUNT++;
-         return TYPEID;
-      }
-
-      size_t getid() {
-         return id();
-      }
-
       size_t size() const { return sizeof(T); }
       
       void destroy(void *self) {
@@ -42,6 +31,11 @@ namespace utl {
       }
    };
 
-   
+   typedef IRTTI* TypeID;
+
+   template<typename T>
+   TypeID GetTypeID() {
+      return &Singleton<RTTI<T>>::Instance();
+   }
 
 }

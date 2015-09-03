@@ -35,6 +35,42 @@ namespace app {
             indices.size());
       }
 
+
+      void _testxpressions() {
+         utl::Sublist list1;
+         list1.push_back(utl::SExpr(45));
+
+         class foo {
+            int i[100];
+         public:
+            foo() { memset((int*)i, 0, 100 * sizeof(int)); }
+            ~foo() {
+               i[0] = 5;
+            }
+         };
+
+         foo bar;
+
+         utl::SExpr sexnil();
+         utl::SExpr sexi(1);
+         utl::SExpr sexf(2.0f);
+         utl::SExpr sexstr(utl::String("lol"));
+         utl::SExpr sexsymb(utl::internString("lolol"));
+         utl::SExpr sexlist(std::move(list1));
+         utl::SExpr sexfoo(bar);
+
+
+         auto i = *sexi.getInt();
+         auto f = *sexf.getFloat();
+         auto str = *sexstr.getStr();
+         auto symb = *sexsymb.getSymb();
+         auto list = *sexlist.getList();
+         auto bar2 = *sexfoo.getObj<foo>();
+
+
+         int j = i;
+      }
+
    public:
       Impl(gfx::Renderer &r, plat::Window &w):m_renderer(r), m_window(w) {}
       ~Impl() {}
@@ -52,6 +88,8 @@ namespace app {
          gfx::TextureRequest request(utl::internString("assets/00.png"));
 
          m_texture = r.getTextureManager().get(request);
+
+         _testxpressions();
 
          utl::LispContext context;
 
@@ -100,9 +138,6 @@ namespace app {
             }
 
          }
-
-         
-
       }
       
       void update() {

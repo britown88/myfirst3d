@@ -53,6 +53,7 @@ namespace utl {
       }
 
       Vector(Vector<T> const &other) {
+         m_size = m_capacity = 0;
          for (auto && o : other) {
             push_back(o);
          }

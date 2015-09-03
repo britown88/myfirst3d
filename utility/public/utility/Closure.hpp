@@ -22,8 +22,6 @@ namespace utl {
       }
    };
 
-   
-
    template<typename T> class Closure {};
 
    template<typename R, typename... Args>
