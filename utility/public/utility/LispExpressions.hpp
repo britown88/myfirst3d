@@ -7,6 +7,9 @@
 #include "Vector.hpp"
 #include "Singleton.hpp"
 #include "Closure.hpp"
+#include <memory>
+
+#define LISP_EXPR(...) #__VA_ARGS__
 
 namespace lisp {
    class Expr;
@@ -15,7 +18,13 @@ namespace lisp {
    typedef utl::StringView Sym;
    typedef utl::String Str;
 
+   class Context;
+
+   typedef utl::Closure<Expr(Expr &, Context &)> EvalClosure;
+   typedef std::shared_ptr<EvalClosure> Evaluator;
+
    UTILITY_API Sym internSym(const char *str);
+   UTILITY_API utl::TypeID getEvaluatorRTTI();
 
    class ExprPrivate;
 
@@ -45,6 +54,9 @@ namespace lisp {
       Expr(Str &str) : Expr(&str, utl::GetTypeID<Str>()) {}
       Expr(Str &&str) : Expr(&str, utl::GetTypeID<Str>(), 0) {}
       Expr(const char *str) : Expr(Str(str)) {}
+      Expr(char *str) : Expr(Str((const char *)str)) {}
+      Expr(Evaluator &eval) :Expr(&eval, getEvaluatorRTTI()) {}
+      Expr(Evaluator &&eval) :Expr(&eval, getEvaluatorRTTI(), 0) {}
 
       int *i32();
       float *f32();

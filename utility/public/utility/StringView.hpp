@@ -5,7 +5,7 @@
 
 namespace utl {
    struct StringViewSlot{
-      const char *name;
+      char name[4];
    };
    typedef StringViewSlot const* StringView;
 

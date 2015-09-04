@@ -153,4 +153,8 @@ namespace lisp {
       static StringTable symTable;
       return symTable.get(str);
    }
+
+   TypeID getEvaluatorRTTI() {
+      return utl::GetTypeID<Evaluator>();
+   }
 }

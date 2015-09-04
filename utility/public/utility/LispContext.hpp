@@ -18,20 +18,12 @@ namespace lisp {
 
       Expr &load(Sym key);
 
+      Expr evaluate(Expr &input);
+
       DECLARE_UTILITY_PUBLIC(Context)
    };
-
-   typedef utl::Closure<Expr(Expr &, Context &)> EvalClosure;
-   typedef std::shared_ptr<EvalClosure> Evaluator;
    
    template<typename L>
-   Evaluator createEvaluator(L && lambda) { return std::make_shared<EvalClosure>(lambda); }
+   Evaluator createEvaluator(L && lambda) { return std::make_shared<EvalClosure>(std::move(lambda)); }
 
-   Expr evaluate(Expr &eval, Expr &input, Context &context) {
-      if (auto e = eval.obj<Evaluator>()) {
-         return (**e)(input, context);
-      }
-
-      return Expr();
-   }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MemoryBuffer.hpp"
+#include "Assert.hpp"
 #include <initializer_list>
 
 namespace utl {
@@ -106,6 +107,18 @@ namespace utl {
          return *(begin() + i);
       }
 
+      T &front() {
+         ASSERT(m_size, "Vector is empty!");
+         
+         return operator[](0);
+      }
+
+      T &back() {
+         ASSERT(m_size, "Vector is empty!");
+
+         return operator[](m_size - 1);
+      }
+
       T const *begin() const {
          return (T*)m_buffer.data();
       }
@@ -122,6 +135,8 @@ namespace utl {
       T *end() {
          return begin() + size();
       }
+
+      
 
       MemoryBuffer &&getBuffer() {
          m_size = 0;

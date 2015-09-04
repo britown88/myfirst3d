@@ -72,6 +72,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="public\utility\Assert.hpp" />
     <ClInclude Include="public\utility\Closure.hpp" />
     <ClInclude Include="public\utility\Color.hpp" />
     <ClInclude Include="public\utility\Defs.hpp" />
@@ -93,6 +94,7 @@
     <ClInclude Include="StringTable.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Assert.cpp" />
     <ClCompile Include="HelloWorld.cpp" />
     <ClCompile Include="LispContext.cpp" />
     <ClCompile Include="LispExpressions.cpp" />
