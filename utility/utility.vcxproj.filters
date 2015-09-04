@@ -101,5 +101,8 @@
     <ClCompile Include="LispExpressions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LispParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

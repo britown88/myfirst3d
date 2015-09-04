@@ -96,6 +96,7 @@
     <ClCompile Include="HelloWorld.cpp" />
     <ClCompile Include="LispContext.cpp" />
     <ClCompile Include="LispExpressions.cpp" />
+    <ClCompile Include="LispParser.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
     <ClCompile Include="Object.cpp" />
