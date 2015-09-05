@@ -16,6 +16,11 @@ namespace lisp {
       void store(Sym key, Expr &value);
       void store(Sym key, Expr &&value);
 
+      template<typename L>
+      void storeEvaluator(const char *name, L && lambda) {
+         store(internSym(name), std::move(createEvaluator(std::move(lambda))));
+      }
+
       Expr &load(Sym key);
 
       Expr evaluate(Expr &input);

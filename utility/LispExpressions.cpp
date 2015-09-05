@@ -9,7 +9,6 @@ namespace lisp {
       static const unsigned int PtrSize = sizeof(void*);
       TypeID m_rtti;
       byte m_data[PtrSize];
-      bool m_eval;
 
       void _moveObjectFrom(void *data, TypeID rtti) {
          if (!rtti) {
@@ -77,25 +76,24 @@ namespace lisp {
       void *getObject() const { return getRTTI()->size() > PtrSize ? *(void**)m_data : (void*)m_data; }
 
    public:
-      ExprPrivate() : m_eval(true) { _clear(); }
-      ExprPrivate(void *data, TypeID rtti) :m_eval(true) {
+      ExprPrivate()  { _clear(); }
+      ExprPrivate(void *data, TypeID rtti)  {
          _clear();
          _copyObjectFrom(data, rtti);
       }
 
-      ExprPrivate(void *data, TypeID rtti, int move) :m_eval(true) {
+      ExprPrivate(void *data, TypeID rtti, int move) {
          _clear();
          _moveObjectFrom(data, rtti);
       }
 
-      ExprPrivate(ExprPrivate const &rhs): m_eval(rhs.m_eval){
+      ExprPrivate(ExprPrivate const &rhs){
          _clear();
          _copyFrom(rhs);
       }
 
       ExprPrivate &operator=(ExprPrivate const &rhs) {
          _destroy();
-         m_eval = rhs.m_eval;
          _copyFrom(rhs);
 
          return *this;
@@ -117,9 +115,6 @@ namespace lisp {
       Sym *getSymb() { return conditionReturn<Sym>(); }
 
       void *getObj(TypeID rtti) { return rtti == getRTTI() ? getObject() : nullptr; }
-
-      //returns if expr should be evaluated
-      bool &eval() { return m_eval; }
 
       //returns false if Expr is nil
       explicit operator bool() { return getRTTI() != nullptr; }
@@ -144,8 +139,6 @@ namespace lisp {
    List *Expr::list() { return self()->getList(); }
    Str *Expr::str() { return self()->getStr(); }
    Sym *Expr::sym() { return self()->getSymb(); }
-
-   bool &Expr::eval() { return self()->eval(); }
 
    Expr::operator bool() { return (bool)*self(); }
 

@@ -6,11 +6,53 @@
 using namespace utl;
 
 namespace lisp {
+
+   void _printExpr(Expr &exp) {
+
+   }
+
+   void storeCommonFunctions(Context &c) {
+      c.storeEvaluator("SYM", [=](lisp::Expr &expr, lisp::Context &c) {
+         return (*expr.list())[1];
+      });
+
+      c.storeEvaluator("print", [=](lisp::Expr &expr, lisp::Context &c) {
+         auto l = expr.list();
+
+         utl::Closure<void(Expr&)> printFunc = [&](Expr &e) {
+            if (auto str = e.str()) {
+               printf("%s", str->c_str());
+            }
+            else if (auto i = e.i32()) {
+               printf("%i", *i);
+            }
+            else if (auto f = e.f32()) {
+               printf("%f", *f);
+            }
+            else if (auto sym = e.sym()) {
+               printf(":%s", (char*)*sym);
+            }
+            else if (auto list = e.list()) {
+               for (auto && subitem : *list) {
+                  printFunc(subitem);
+               }
+            }
+         };
+
+         for (auto iter = l->begin() + 1; iter != l->end(); ++iter) {  
+            printFunc(c.evaluate(*iter));            
+         }
+         return Expr();
+      });
+   }
+
    class ContextPrivate : public ObjectPrivate {
       Expr None;
       std::vector<std::unordered_map<Sym, Expr>> m_table;
    public:
-      ContextPrivate() { m_table.push_back({}); }
+      ContextPrivate() { 
+         m_table.push_back({}); 
+      }
 
       void push() { m_table.push_back({}); }
       void pop() { if (m_table.size() > 1) { m_table.pop_back(); } }
@@ -34,10 +76,6 @@ namespace lisp {
       }
 
       Expr evaluate(Expr &input) {
-         if (!input.eval()) {
-            return input;
-         }
-
          if (auto list = input.list()) {
             if (list->size()) {
                if (auto name = list->front().sym()) {
@@ -57,7 +95,7 @@ namespace lisp {
             auto found = load(*name);
             if (found) {
                //if the input is a symbol and that symbol has a stored value, return it
-               return found;
+               return evaluate(found);
             }
          }
 
@@ -70,7 +108,9 @@ namespace lisp {
       DECLARE_UTILITY_PRIVATE(Context)
    };
 
-   Context::Context() :Object(new ContextPrivate()) {}
+   Context::Context() :Object(new ContextPrivate()) {
+      storeCommonFunctions(*this);
+   }
 
    void Context::push() { self()->push(); }
    void Context::pop(){ self()->pop(); }

@@ -44,7 +44,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CompilingUtilityDLL;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;CompilingUtilityDLL;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./public/;</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
@@ -60,7 +60,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CompilingUtilityDLL;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;CompilingUtilityDLL;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./public/;</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
@@ -80,7 +80,6 @@
     <ClInclude Include="public\utility\HelloWorld.hpp" />
     <ClInclude Include="public\utility\LispContext.hpp" />
     <ClInclude Include="public\utility\LispExpressions.hpp" />
-    <ClInclude Include="public\utility\LispParser.hpp" />
     <ClInclude Include="public\utility\Matrix.hpp" />
     <ClInclude Include="public\utility\MemoryBuffer.hpp" />
     <ClInclude Include="public\utility\Object.hpp" />

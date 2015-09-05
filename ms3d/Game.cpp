@@ -14,208 +14,6 @@
 #include "utility/LispContext.hpp"
 #include "utility/Assert.hpp"
 
-namespace lisp {
-   class Parser {
-      bool isWhitespace(char c) {
-         return c == ' ' || c == '\t' || c == '\r' || c == '\n';
-      }
-
-      char resolveEscape(char c) {
-         switch (c) {
-         case 'n': return '\n';
-         case 't': return '\t';
-         case 'r': return '\r';
-         }
-         return c;
-      }
-
-      enum WordType {
-         Literal,//double quotes string literal
-         Comment,//semiclon'd comment block         
-         ListPrefix,//Value ending with open-parens.  Needs to start a new list with the value pushed in
-         Value//Not any of the othr types
-      };
-
-      bool charIn(char c, const char *chars) {
-         while (char c2 = *chars++) {
-            if (c == c2) {
-               return true;
-            }
-         }
-         return false;
-      }
-
-      //just need to determine if this is a float, an int, or a symbol
-      Expr parseWord(char *buffer, int len) {
-         if (buffer[len - 1] == 'f' || buffer[len - 1] == 'F' || strchr(buffer, '.')) {
-            float f;
-            if (sscanf(buffer, "%f", &f) > 0) {
-               return f;
-            }
-         }
-
-         int i;
-         if (sscanf(buffer, "%i", &i) > 0) {
-            return i;
-         }
-
-         return internSym(buffer);
-      }
-
-      WordType readWord(const char *&expr, char *&buffer, int &len) {
-         len = 0;
-
-         //skip whitespace
-         while (char c = *expr) {
-            if (!isWhitespace(c)) { break; }
-            ++expr;
-         }
-
-         if(char c = *expr){
-            //string literal
-            if (c == '\"') {
-               while (char c = *++expr) {
-                  if (c == '\\') {
-                     if (char cnext = *++expr) {
-                        buffer[len++] = resolveEscape(cnext);
-                     }
-                  }
-                  else if (c == '\"') {
-                     ++expr;//dont forget to move the ptr up to skip the last quote
-                     break;
-                  }
-                  else{
-                     buffer[len++] = c;
-                  }
-               }
-               buffer[len] = 0;
-               return Literal;
-            }
-
-            //comments go till end of lines
-            if (c == ';') {
-               while (char c = *++expr) {
-                  if (c == '\n') {
-                     break;
-                  }
-                  buffer[len++] = c;
-               }
-               buffer[len] = 0;
-               return Comment;
-            }
-
-            //normal value
-            while (char c = *expr++) {
-               if (isWhitespace(c)) {
-                  break;
-               }
-
-               if (c == '(' && len) {
-                  //special case.  token ends with an open parens
-                  //we want to handle this specially by pretending its the first itme in a new list
-                  buffer[len] = 0;//the parens then gets skipped
-                  return ListPrefix;
-               }
-
-               //we need to check for hitting delims
-               if (charIn(c, "\":();")) {
-                  if (len) {//we're mid-go so roll the ptr back and break out
-                     --expr;
-                  }
-                  else {//first character so push it in and break out
-                     buffer[len++] = c;
-                  }
-                  break;
-               }
-
-               //everythings good, add it!
-               buffer[len++] = c;
-            }
-         }
-
-         buffer[len] = 0;
-         return Value;
-      }
-
-      void readList(List &list, const char *&expr) {
-         static char buff[255] = { 0 };
-         char *buffer = &buff[0];
-         int len = 0;
-         bool delayEvaluation = false;
-
-         while (*expr) {
-            auto wordType = readWord(expr, buffer, len);
-
-            if (wordType == Literal) {//literal string could still be empty
-               list.push_back(buffer);
-               continue;
-            }
-
-            if (!len) {
-               continue;//word is empty for some reason..skip it
-            }
-
-            if (wordType == Comment) {
-               continue; //drop comments
-            }
-
-            if (buffer[0] == ':') {
-               delayEvaluation = true; //flag the next expr to have delayed eval
-               continue;
-            }
-
-            //start a new list
-            if (buffer[0] == '(' || wordType == ListPrefix) {
-               list.push_back(List());
-
-               if (delayEvaluation) {
-                  list.back().eval() = delayEvaluation = false;
-               }
-
-               if (wordType == ListPrefix) {
-                  list.back().list()->push_back(buffer);
-               }
-
-               readList(*list.back().list(), expr);
-               continue;
-            }
-
-            if (buffer[0] == ')') {
-               return;//end our current list
-            }
-
-            //if we're here it means we're inside one big happy list
-            list.push_back(parseWord(buffer, len));
-            if (delayEvaluation) {
-               list.back().eval() = delayEvaluation = false;
-            }
-         }
-      }
-
-   public:
-      Expr readOne(const char *expr) {
-         lisp::List out; //back() should always be either nil or a list         
-
-         if (!expr) {
-            return Expr();
-         }
-
-         readList(out, expr);
-
-         
-         if (out.size() == 0) {
-            return Expr();
-         }
-
-         if (out.size() == 1) {
-            return out.back();
-         }
-
-         return out;
-      }
-   };
-}
-
 
 namespace app {
    class Game::Impl {
@@ -241,9 +39,7 @@ namespace app {
       }
 
       void _testxpression3() {
-         lisp::Parser p;
-
-         auto res = p.readOne(LISP_EXPR(
+         auto res = lisp::readOne(LISP_EXPR(
             for-each :i :in range-from(1 to 10)
                (print "value is \"" i "\"")
                (print "next value is " (+ i 1))
@@ -252,12 +48,9 @@ namespace app {
 
          lisp::Context c;
 
-         c.store(lisp::internSym("for-each"), lisp::createEvaluator([=](lisp::Expr &expr, lisp::Context &c) {
-            printf("hello sean.");
-            return lisp::Expr();
-         }));
+         
 
-         c.evaluate(res);
+         c.evaluate(lisp::readOne(LISP_EXPR(print "this " 0.0 " is a " SYMBOL "test " (1 2 3 4))));
 
          auto list = *res.list();
          auto foreach = *list[0].sym();

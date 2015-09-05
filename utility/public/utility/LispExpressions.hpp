@@ -67,14 +67,11 @@ namespace lisp {
       template<typename T>
       T *obj() { return (T*)_getObjImpl(utl::GetTypeID<T>()); }
 
-      //returns if expr should be evaluated, defaults to true
-      bool &eval();
-
       //returns false if Expr is nil
       explicit operator bool();      
 
       DECLARE_UTILITY_PUBLIC(Expr)
    };
 
-   UTILITY_API List parseFile(const char *path);
+   UTILITY_API Expr readOne(const char *expr);
 }
