@@ -7,17 +7,147 @@ using namespace utl;
 
 namespace lisp {
 
-   void _printExpr(Expr &exp) {
-
-   }
 
    void storeCommonFunctions(Context &c) {
-      c.storeEvaluator("SYM", [=](lisp::Expr &expr, lisp::Context &c) {
+      c.storeEvaluator("dont-eval", [=](lisp::Expr &expr, lisp::Context &c) {
          return (*expr.list())[1];
       });
 
-      c.storeEvaluator("print", [=](lisp::Expr &expr, lisp::Context &c) {
+      c.storeEvaluator("range-from", [=](lisp::Expr &expr, lisp::Context &c) {
+         static Sym symTo = internSym("to");
+         List output;
+         auto &list = *expr.list();
+
+         //name, from, to, other
+         if (list.size() != 4) {
+            return Expr();
+         }
+
+         int start = 0;
+         int end = 0;
+
+         auto startIter = c.evaluate(list[1]);
+         auto endIter = c.evaluate(list[3]);
+
+         if (auto i = startIter.i32()) {
+            start = *i;
+         }
+         else {
+            return Expr();
+         }
+
+         if (auto to = list[2].sym()) {
+            if (*to != symTo) {
+               return Expr();
+            }
+         }
+         else {
+            return Expr();
+         }
+
+         if (auto i = endIter.i32()) {
+            end = *i;
+         }
+         else {
+            return Expr();
+         }
+
+         int inc = 1;
+         if (start > end) {
+            inc = -inc;
+         }
+
+         for (int i = start; ; i += inc) {
+            output.push_back(i);
+            if (i == end) {
+               break;
+            }
+         }
+
+         return Expr(output);
+      });
+
+      c.storeEvaluator("for-each", [=](lisp::Expr &expr, lisp::Context &c) {
+         static Sym symIn = internSym("in");
+         auto &list = *expr.list();
+         Sym stored = nullptr;
+
+         //name, iter, in, lsit, first expr
+         if (list.size() < 5) {
+            return Expr();
+         }
+
+         c.push();
+
+         if (auto iter = list[1].sym()) {
+            stored = *iter;            
+         }
+         else {
+            return Expr();
+         }
+
+         if (auto in = list[2].sym()) {
+            if (*in != symIn) {
+               return Expr();
+            }            
+         }
+         else {
+            return Expr();
+         }
+
+         auto evaluatedList = c.evaluate(list[3]);
+         if (auto iterList = evaluatedList.list()) {
+            for (auto &i : *iterList) {
+               c.store(stored, i);
+               for (auto iter = list.begin() + 4; iter != list.end(); ++iter) {
+                  c.evaluate(*iter);
+               }
+            }
+         }
+
+         c.pop();
+         return Expr();
+      });
+
+      c.storeEvaluator("+", [=](lisp::Expr &expr, lisp::Context &c) {
+         int outi = 0;
+         float outf = 0.0f;
+         bool fl = false;
+
+         auto addFunc = [&](Expr*iter) {
+            if (auto i = iter->i32()) {
+               if (fl) {
+                  outf += (float)*i;
+               }
+               else {
+                  outi += *i;
+               }
+            }
+            else if (auto f = iter->f32()) {
+               if (!fl) {
+                  outf = (float)outi;
+                  fl = true;
+               }
+
+               outf += *f;
+            }
+         };
+         
          auto l = expr.list();
+         for (auto iter = l->begin() + 1; iter != l->end(); ++iter) {
+            if (iter->sym() || iter->list()) {
+               auto resolved = c.evaluate(*iter);
+               addFunc(&resolved);
+            }
+            else {
+               addFunc(iter);
+            }
+         }
+
+         return fl ? Expr(outf) : Expr(outi);
+      });
+
+      c.storeEvaluator("print", [=](lisp::Expr &expr, lisp::Context &c) {         
 
          utl::Closure<void(Expr&)> printFunc = [&](Expr &e) {
             if (auto str = e.str()) {
@@ -30,7 +160,7 @@ namespace lisp {
                printf("%f", *f);
             }
             else if (auto sym = e.sym()) {
-               printf(":%s", (char*)*sym);
+               printf("<%s>", (char*)*sym);
             }
             else if (auto list = e.list()) {
                for (auto && subitem : *list) {
@@ -39,8 +169,9 @@ namespace lisp {
             }
          };
 
+         auto l = expr.list();
          for (auto iter = l->begin() + 1; iter != l->end(); ++iter) {  
-            printFunc(c.evaluate(*iter));            
+            printFunc(c.evaluate(*iter));
          }
          return Expr();
       });
@@ -58,10 +189,22 @@ namespace lisp {
       void pop() { if (m_table.size() > 1) { m_table.pop_back(); } }
 
       void store(Sym key, Expr &value) {
-         m_table.back().insert(std::make_pair(key, value));
+         auto &found = load(key);
+         if (found) {
+            found = value;
+         }
+         else {
+            m_table.back().insert(std::make_pair(key, value));
+         }
       }
       void store(Sym key, Expr &&value) {
-         m_table.back().insert(std::make_pair(key, std::move(value)));
+         auto &found = load(key);
+         if (found) {
+            found = std::move(value);
+         }
+         else {
+            m_table.back().insert(std::make_pair(key, std::move(value)));
+         }
       }
 
       Expr &load(Sym key) {
@@ -78,16 +221,10 @@ namespace lisp {
       Expr evaluate(Expr &input) {
          if (auto list = input.list()) {
             if (list->size()) {
-               if (auto name = list->front().sym()) {
-                  auto found = load(*name);
-                  if (found) {
-                     if (auto eval = found.obj<Evaluator>()) {
-                        //if input is a list, that list isnt empty, the first item is a symbol, 
-                        //that symbol is stored in the context, and the expr stored is an evaluator,
-                        //return the result fo the evaulator, passing the input into it
-                        return (**eval)(input, *parent());
-                     }
-                  }                  
+               auto first = evaluate(list->front());
+
+               if (auto eval = first.obj<Evaluator>()) {
+                  return (**eval)(input, *parent());
                }
             }
          }

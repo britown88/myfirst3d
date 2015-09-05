@@ -124,7 +124,7 @@ namespace lisp {
       }
 
       Expr createSymDecl(Expr &e) {
-         static Sym symName = internSym("SYM");
+         static Sym symName = internSym("dont-eval");
          return List{ symName , e };
       }
 
@@ -161,7 +161,7 @@ namespace lisp {
                Expr newList = List();
 
                if (wordType == ListPrefix) {
-                  newList.list()->push_back(buffer);
+                  newList.list()->push_back(parseWord(buffer, len));
                }
 
                readList(*newList.list(), expr);
