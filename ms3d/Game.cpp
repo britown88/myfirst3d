@@ -39,7 +39,7 @@ namespace app {
       }
 
       void _testxpression3() {
-         auto res = lisp::readOne(LISP_EXPR(
+         auto res = lisp::parse(LISP_EXPR(
             for-each i in range-from(1 to 10)
                (print "value is \"" i "\" and ")
                (print "next value is " (+ i 1) "\n")
@@ -50,17 +50,17 @@ namespace app {
 
          c.evaluate(res);
 
-         c.evaluate(lisp::readOne(LISP_EXPR(print (+ 1 2) "\n")));
-         c.evaluate(lisp::readOne(LISP_EXPR(print (+ 1 2 3 4 5) "\n")));
-         c.evaluate(lisp::readOne(LISP_EXPR(print (+ 1 (+ 1 2)) "\n")));
-         c.evaluate(lisp::readOne(LISP_EXPR(print (+ (+ 1 2) (+ 1 2)) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print (+ 1 2) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print (+ 1 2 3 4 5) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print (+ 1 (+ 1 2)) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print (+ (+ 1 2) (+ 1 2)) "\n")));
 
-         c.evaluate(lisp::readOne(LISP_EXPR(print :(print 1 :(print 2)) "\n")));
-         c.evaluate(lisp::readOne(LISP_EXPR(print (print 1 :(print 2)) "\n")));
-         c.evaluate(lisp::readOne(LISP_EXPR(print (:print 1 (print 2)) "\n")));
-         c.evaluate(lisp::readOne(LISP_EXPR(print (:print 1 :(print 2)) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print :(print 1 :(print 2)) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print (print 1 :(print 2)) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print (:print 1 (print 2)) "\n")));
+         c.evaluate(lisp::parse(LISP_EXPR(print (:print 1 :(print 2)) "\n")));
 
-         c.evaluate(lisp::readOne(LISP_EXPR(print "this " 0.0 " is \n a " :(print 1) " " SYMBOL " test " (1 2 3 4))));
+         c.evaluate(lisp::parse(LISP_EXPR(print "this " 0.0 " is \n a " :(print 1) " " SYMBOL " test " (1 2 3 4))));
 
          auto list = *res.list();
          auto foreach = *list[0].sym();

@@ -190,7 +190,7 @@ namespace lisp {
          }
       }
 
-      Expr readOne(const char *expr) {
+      Expr parse(const char *expr) {
          lisp::List out; //back() should always be either nil or a list         
 
          if (!expr) {
@@ -202,10 +202,6 @@ namespace lisp {
 
          if (out.size() == 0) {
             return Expr();
-         }
-
-         if (out.size() == 1) {
-            return out.back();
          }
 
          return out;

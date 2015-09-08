@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "platform", "platform\platfo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "libpng\libpng.vcxproj", "{3C2C530B-1813-4914-B9A7-47E94C44F737}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "entities", "entities\entities.vcxproj", "{F9D92725-F63A-4304-989F-339F767C03D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -58,6 +60,14 @@ Global
 		{3C2C530B-1813-4914-B9A7-47E94C44F737}.Release|Win32.ActiveCfg = Release|Win32
 		{3C2C530B-1813-4914-B9A7-47E94C44F737}.Release|Win32.Build.0 = Release|Win32
 		{3C2C530B-1813-4914-B9A7-47E94C44F737}.Release|x64.ActiveCfg = Release|Win32
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Debug|Win32.Build.0 = Debug|Win32
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Debug|x64.ActiveCfg = Debug|x64
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Debug|x64.Build.0 = Debug|x64
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Release|Win32.ActiveCfg = Release|Win32
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Release|Win32.Build.0 = Release|Win32
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Release|x64.ActiveCfg = Release|x64
+		{F9D92725-F63A-4304-989F-339F767C03D8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -73,5 +73,5 @@ namespace lisp {
       DECLARE_UTILITY_PUBLIC(Expr)
    };
 
-   UTILITY_API Expr readOne(const char *expr);
+   UTILITY_API Expr parse(const char *expr);
 }
